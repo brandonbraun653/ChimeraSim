@@ -5,6 +5,7 @@ gen_static_lib_variants(
     chimera_sim_watchdog
   SOURCES
     sim_chimera_watchdog.cpp
+    sim_chimera_iwdg.cpp
   PRV_LIBRARIES
     aurora_intf_inc
     chimera_intf_inc

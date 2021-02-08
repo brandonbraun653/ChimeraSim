@@ -5,7 +5,7 @@
  *  Description:
  *    Watchdog Simulator
  *
- *  2020 | Brandon Braun | brandonbraun653@gmail.com
+ *  2020-2021 | Brandon Braun | brandonbraun653@gmail.com
  *******************************************************************************/
 
 #if defined( CHIMERA_SIMULATOR )
@@ -14,17 +14,44 @@
 #include <Chimera/common>
 #include <Chimera/watchdog>
 
-namespace Chimera::Watchdog::Backend
+namespace Chimera::Watchdog
 {
-  Chimera::Status_t registerDriver( Chimera::Watchdog::Backend::DriverConfig &registry )
+  namespace Backend
   {
-    registry.isSupported          = false;
-    registry.getIndependentDriver = nullptr;
-    registry.getWindowDriver      = nullptr;
-    registry.initialize           = nullptr;
-    registry.reset                = nullptr;
-    return Chimera::Status::NOT_SUPPORTED;
-  }
-}  // namespace Chimera::Watchdog::Backend
+    Chimera::Status_t initialize()
+    {
+      return Chimera::Status::NOT_SUPPORTED;
+    }
+
+
+    Chimera::Status_t reset()
+    {
+      return Chimera::Status::NOT_SUPPORTED;
+    }
+
+
+    Chimera::Watchdog::Independent_sPtr getDriver( const IChannel channel )
+    {
+      return nullptr;
+    }
+
+
+    Chimera::Watchdog::Window_sPtr getDriver( const WChannel channel )
+    {
+      return nullptr;
+    }
+
+
+    Chimera::Status_t registerDriver( Chimera::Watchdog::Backend::DriverConfig &registry )
+    {
+      registry.isSupported          = true;
+      registry.getIndependentDriver = getDriver;
+      registry.getWindowDriver      = getDriver;
+      registry.initialize           = initialize;
+      registry.reset                = reset;
+      return Chimera::Status::OK;
+    }
+  }    // namespace Backend
+}    // namespace Chimera::Watchdog
 
 #endif /* CHIMERA_SIMULATOR */
