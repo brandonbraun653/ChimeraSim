@@ -187,7 +187,7 @@ namespace Chimera::SPI
     }
   }    // namespace Backend
 
-  namespace Sim
+  namespace SIM
   {
   }
 }    // namespace Chimera::SPI

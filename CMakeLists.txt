@@ -2,6 +2,7 @@ include("${COMMON_TOOL_ROOT}/cmake/utility/embedded.cmake")
 
 
 add_subdirectory(source/peripherals)
+add_subdirectory(lib/json)
 
 
 gen_intf_lib_variants(

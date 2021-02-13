@@ -197,7 +197,7 @@ namespace Chimera::UART
     }
   }    // namespace Backend
 
-  namespace Sim
+  namespace SIM
   {
   }
 

@@ -197,7 +197,7 @@ namespace Chimera::USART
     }
   }    // namespace Backend
 
-  namespace Sim
+  namespace SIM
   {
   }
 }    // namespace Chimera::USART
