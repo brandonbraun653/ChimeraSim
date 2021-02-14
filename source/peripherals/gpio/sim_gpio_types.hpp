@@ -30,6 +30,11 @@ namespace Chimera::GPIO::SIM
   class BasicGPIO;
 
   /*-------------------------------------------------------------------------------
+  Aliases
+  -------------------------------------------------------------------------------*/
+  using GPIODevice = Chimera::SIM::VirtualDevice<BasicGPIO, MockGPIO, Driver_rPtr>;
+
+  /*-------------------------------------------------------------------------------
   Constants
   -------------------------------------------------------------------------------*/
   static constexpr size_t NUM_PERIPHS         = 16;
@@ -91,23 +96,9 @@ namespace Chimera::GPIO::SIM
   /*-------------------------------------------------------------------------------
   Structures
   -------------------------------------------------------------------------------*/
-  struct Device
-  {
-    std::recursive_mutex lock; /**< Simulator access protection */
-    BasicGPIO *defaultDriver;  /**< Default behavior driver */
-    MockGPIO *virtualDriver;   /**< Runtime device implementation */
-    Driver_rPtr realDriver;    /**< Real driver Chimera hooks into */
-    size_t resourceIndex;      /**< Expected resource index associated with the driver */
-    bool initialized;
-
-    Device() :
-        defaultDriver( nullptr ), virtualDriver( nullptr ), realDriver( nullptr ),
-        resourceIndex( Chimera::SIM::INVALID_RESOURCE_INDEX ), initialized( false )
-    {
-    }
-  };
-
-
+  /**
+   *  Tracks the simulated state of the virtual GPIO device
+   */
   struct VirtualState
   {
     std::recursive_timed_mutex mtx; /**< Driver lock */

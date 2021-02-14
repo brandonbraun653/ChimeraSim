@@ -12,5 +12,8 @@
 #ifndef CHIMERA_SIM_SPI_INCLUDES
 #define CHIMERA_SIM_SPI_INCLUDES
 
+#include <ChimeraSim/source/peripherals/spi/sim_spi_intf.hpp>
+#include <ChimeraSim/source/peripherals/spi/sim_spi_types.hpp>
+#include <ChimeraSim/source/peripherals/spi/sim_spi_virtual.hpp>
 
 #endif  /* !CHIMERA_SIM_SPI_INCLUDES */

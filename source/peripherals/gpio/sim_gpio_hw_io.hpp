@@ -14,7 +14,7 @@
 #define CHIMERA_SIM_GPIO_HW_IO_DRIVER_HPP
 
 /* Simulator Includes */
-#include <ChimeraSim/source/peripherals/gpio/sim_gpio_mock.hpp>
+#include <ChimeraSim/source/peripherals/gpio/sim_gpio_virtual.hpp>
 
 /* Chimera Includes */
 #include <Chimera/gpio>
@@ -23,7 +23,7 @@ namespace Chimera::GPIO::SIM
 {
 
   // Rename to something more like...BenchControl...and inherit from the dispatch class
-  class RemoteControl : public MockBaseGPIO
+  class RemoteControl
   {
   public:
 

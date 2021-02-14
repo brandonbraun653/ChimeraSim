@@ -21,14 +21,13 @@
 /* Simulator Includes */
 #include <ChimeraSim/gpio>
 #include <ChimeraSim/source/shared/common_types.hpp>
-#include <ChimeraSim/source/peripherals/gpio/sim_gpio_virtual.hpp>
 
 namespace Chimera::GPIO
 {
   /*-------------------------------------------------------------------------------
   Static Data
   -------------------------------------------------------------------------------*/
-  static std::array<SIM::Device, SIM::NUM_DRIVERS> s_devices;
+  static std::array<SIM::GPIODevice, SIM::NUM_DRIVERS> s_devices;
 
   /*-------------------------------------------------------------------------------
   Driver Implementation
@@ -109,7 +108,7 @@ namespace Chimera::GPIO
   Chimera::Status_t Driver::setMode( const Chimera::GPIO::Drive drive, const Chimera::GPIO::Pull pull )
   {
     RT_HARD_ASSERT( SIM::validateDriver( mDriver ) );
-    auto driver = reinterpret_cast<SIM::Device *>( mDriver );
+    auto driver = reinterpret_cast<SIM::GPIODevice *>( mDriver );
 
     std::lock_guard<std::recursive_mutex> lk( driver->lock );
     return driver->virtualDriver->setMode( drive, pull );
@@ -119,7 +118,7 @@ namespace Chimera::GPIO
   Chimera::Status_t Driver::setState( const Chimera::GPIO::State state )
   {
     RT_HARD_ASSERT( SIM::validateDriver( mDriver ) );
-    auto driver = reinterpret_cast<SIM::Device *>( mDriver );
+    auto driver = reinterpret_cast<SIM::GPIODevice *>( mDriver );
 
     std::lock_guard<std::recursive_mutex> lk( driver->lock );
     return driver->virtualDriver->setState( state );
@@ -129,7 +128,7 @@ namespace Chimera::GPIO
   Chimera::Status_t Driver::getState( Chimera::GPIO::State &state )
   {
     RT_HARD_ASSERT( SIM::validateDriver( mDriver ) );
-    auto driver = reinterpret_cast<SIM::Device *>( mDriver );
+    auto driver = reinterpret_cast<SIM::GPIODevice *>( mDriver );
 
     std::lock_guard<std::recursive_mutex> lk( driver->lock );
     return driver->virtualDriver->getState( state );
@@ -139,7 +138,7 @@ namespace Chimera::GPIO
   Chimera::Status_t Driver::toggle()
   {
     RT_HARD_ASSERT( SIM::validateDriver( mDriver ) );
-    auto driver = reinterpret_cast<SIM::Device *>( mDriver );
+    auto driver = reinterpret_cast<SIM::GPIODevice *>( mDriver );
 
     std::lock_guard<std::recursive_mutex> lk( driver->lock );
     return driver->virtualDriver->toggle();
@@ -149,7 +148,7 @@ namespace Chimera::GPIO
   Chimera::Status_t Driver::attachInterrupt( Chimera::Function::vGeneric &func, const Chimera::EXTI::EdgeTrigger trigger )
   {
     RT_HARD_ASSERT( SIM::validateDriver( mDriver ) );
-    auto driver = reinterpret_cast<SIM::Device *>( mDriver );
+    auto driver = reinterpret_cast<SIM::GPIODevice *>( mDriver );
 
     std::lock_guard<std::recursive_mutex> lk( driver->lock );
     return driver->virtualDriver->attachInterrupt( func, trigger );
@@ -159,7 +158,7 @@ namespace Chimera::GPIO
   void Driver::detachInterrupt()
   {
     RT_HARD_ASSERT( SIM::validateDriver( mDriver ) );
-    auto driver = reinterpret_cast<SIM::Device *>( mDriver );
+    auto driver = reinterpret_cast<SIM::GPIODevice *>( mDriver );
 
     std::lock_guard<std::recursive_mutex> lk( driver->lock );
     driver->virtualDriver->detachInterrupt();
@@ -169,7 +168,7 @@ namespace Chimera::GPIO
   Chimera::EXTI::EventLine_t Driver::getInterruptLine()
   {
     RT_HARD_ASSERT( SIM::validateDriver( mDriver ) );
-    auto driver = reinterpret_cast<SIM::Device *>( mDriver );
+    auto driver = reinterpret_cast<SIM::GPIODevice *>( mDriver );
 
     std::lock_guard<std::recursive_mutex> lk( driver->lock );
     return driver->virtualDriver->getInterruptLine();
@@ -181,7 +180,7 @@ namespace Chimera::GPIO
   void Driver::lock()
   {
     RT_HARD_ASSERT( SIM::validateDriver( mDriver ) );
-    auto driver = reinterpret_cast<SIM::Device *>( mDriver );
+    auto driver = reinterpret_cast<SIM::GPIODevice *>( mDriver );
 
     std::lock_guard<std::recursive_mutex> lk( driver->lock );
     driver->virtualDriver->lock();
@@ -191,7 +190,7 @@ namespace Chimera::GPIO
   void Driver::lockFromISR()
   {
     RT_HARD_ASSERT( SIM::validateDriver( mDriver ) );
-    auto driver = reinterpret_cast<SIM::Device *>( mDriver );
+    auto driver = reinterpret_cast<SIM::GPIODevice *>( mDriver );
 
     std::lock_guard<std::recursive_mutex> lk( driver->lock );
     driver->virtualDriver->lockFromISR();
@@ -201,7 +200,7 @@ namespace Chimera::GPIO
   bool Driver::try_lock_for( const size_t timeout )
   {
     RT_HARD_ASSERT( SIM::validateDriver( mDriver ) );
-    auto driver = reinterpret_cast<SIM::Device *>( mDriver );
+    auto driver = reinterpret_cast<SIM::GPIODevice *>( mDriver );
 
     std::lock_guard<std::recursive_mutex> lk( driver->lock );
     return driver->virtualDriver->try_lock_for( timeout );
@@ -211,7 +210,7 @@ namespace Chimera::GPIO
   void Driver::unlock()
   {
     RT_HARD_ASSERT( SIM::validateDriver( mDriver ) );
-    auto driver = reinterpret_cast<SIM::Device *>( mDriver );
+    auto driver = reinterpret_cast<SIM::GPIODevice *>( mDriver );
 
     std::lock_guard<std::recursive_mutex> lk( driver->lock );
     driver->virtualDriver->unlock();
@@ -221,7 +220,7 @@ namespace Chimera::GPIO
   void Driver::unlockFromISR()
   {
     RT_HARD_ASSERT( SIM::validateDriver( mDriver ) );
-    auto driver = reinterpret_cast<SIM::Device *>( mDriver );
+    auto driver = reinterpret_cast<SIM::GPIODevice *>( mDriver );
 
     std::lock_guard<std::recursive_mutex> lk( driver->lock );
     driver->virtualDriver->unlockFromISR();
@@ -312,6 +311,87 @@ namespace Chimera::GPIO
       GPIOI_PIN_RINDEX_OFFSET, GPIOJ_PIN_RINDEX_OFFSET, GPIOK_PIN_RINDEX_OFFSET, GPIOL_PIN_RINDEX_OFFSET,
       GPIOM_PIN_RINDEX_OFFSET, GPION_PIN_RINDEX_OFFSET, GPIOO_PIN_RINDEX_OFFSET, GPIOP_PIN_RINDEX_OFFSET
     };
+
+
+    void MockGPIO::DelegateToFake( IGPIO *const fake )
+    {
+      using ::testing::_;
+      using ::testing::Matcher;
+
+      RT_HARD_ASSERT( fake );
+      mFake = fake;
+
+      ON_CALL( *this, init( _ ) ).WillByDefault( [ this ]( const Chimera::GPIO::PinInit &a ) {
+        RT_HARD_ASSERT( mFake );
+        return mFake->init( a );
+      } );
+
+      ON_CALL( *this, init( _, _ ) ).WillByDefault( [ this ]( const Chimera::GPIO::Port a, const uint8_t b ) {
+        RT_HARD_ASSERT( mFake );
+        return mFake->init( a, b );
+      } );
+
+      ON_CALL( *this, setMode ).WillByDefault( [ this ]( const Chimera::GPIO::Drive a, const Chimera::GPIO::Pull b ) {
+        RT_HARD_ASSERT( mFake );
+        return mFake->setMode( a, b );
+      } );
+
+      ON_CALL( *this, attachInterrupt )
+          .WillByDefault( [ this ]( Chimera::Function::vGeneric &a, const Chimera::EXTI::EdgeTrigger b ) {
+            RT_HARD_ASSERT( mFake );
+            return mFake->attachInterrupt( a, b );
+          } );
+
+      ON_CALL( *this, setState ).WillByDefault( [ this ]( const Chimera::GPIO::State a ) {
+        RT_HARD_ASSERT( mFake );
+        return mFake->setState( a );
+      } );
+
+      ON_CALL( *this, getState ).WillByDefault( [ this ]( Chimera::GPIO::State &a ) {
+        RT_HARD_ASSERT( mFake );
+        return mFake->getState( a );
+      } );
+
+      ON_CALL( *this, toggle ).WillByDefault( [ this ]() {
+        RT_HARD_ASSERT( mFake );
+        return mFake->toggle();
+      } );
+
+      ON_CALL( *this, detachInterrupt ).WillByDefault( [ this ]() {
+        RT_HARD_ASSERT( mFake );
+        mFake->detachInterrupt();
+      } );
+
+      ON_CALL( *this, getInterruptLine ).WillByDefault( [ this ]() {
+        RT_HARD_ASSERT( mFake );
+        return mFake->getInterruptLine();
+      } );
+
+      ON_CALL( *this, lock ).WillByDefault( [ this ]() {
+        RT_HARD_ASSERT( mFake );
+        mFake->lock();
+      } );
+
+      ON_CALL( *this, lockFromISR ).WillByDefault( [ this ]() {
+        RT_HARD_ASSERT( mFake );
+        mFake->lockFromISR();
+      } );
+
+      ON_CALL( *this, try_lock_for ).WillByDefault( [ this ]( const size_t a ) {
+        RT_HARD_ASSERT( mFake );
+        return mFake->try_lock_for( a );
+      } );
+
+      ON_CALL( *this, unlock ).WillByDefault( [ this ]() {
+        RT_HARD_ASSERT( mFake );
+        mFake->unlock();
+      } );
+
+      ON_CALL( *this, unlockFromISR ).WillByDefault( [ this ]() {
+        RT_HARD_ASSERT( mFake );
+        mFake->unlockFromISR();
+      } );
+    }
 
 
     bool validateDriver( void *const driver )

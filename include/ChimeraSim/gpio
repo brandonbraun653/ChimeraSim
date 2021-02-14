@@ -14,5 +14,6 @@
 
 #include <ChimeraSim/source/peripherals/gpio/sim_gpio_intf.hpp>
 #include <ChimeraSim/source/peripherals/gpio/sim_gpio_types.hpp>
+#include <ChimeraSim/source/peripherals/gpio/sim_gpio_virtual.hpp>
 
 #endif  /* !CHIMERA_SIM_GPIO_INCLUDES */

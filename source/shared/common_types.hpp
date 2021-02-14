@@ -15,10 +15,37 @@
 /* STL Includes */
 #include <cstddef>
 #include <limits>
+#include <mutex>
 
 namespace Chimera::SIM
 {
+  /*-------------------------------------------------------------------------------
+  Constants
+  -------------------------------------------------------------------------------*/
   static constexpr size_t INVALID_RESOURCE_INDEX = std::numeric_limits<size_t>::max();
+
+  /*-------------------------------------------------------------------------------
+  Structures
+  -------------------------------------------------------------------------------*/
+  /**
+   *  Generic device descriptor for a virtual peripheral
+   */
+  template<class Default_t, class Mock_t, typename RealPtr_t>
+  struct VirtualDevice
+  {
+    std::recursive_mutex lock; /**< Simulator access protection */
+    Default_t *defaultDriver;  /**< Default behavior driver */
+    Mock_t *virtualDriver;     /**< Runtime device implementation */
+    RealPtr_t realDriver;      /**< Real driver Chimera hooks into */
+    size_t resourceIndex;      /**< Expected resource index associated with the driver */
+    bool initialized;
+
+    VirtualDevice() :
+        defaultDriver( nullptr ), virtualDriver( nullptr ), realDriver( nullptr ),
+        resourceIndex( Chimera::SIM::INVALID_RESOURCE_INDEX ), initialized( false )
+    {
+    }
+  };
 }  // namespace Chimera::SIM
 
 #endif  /* !CHIMERA_SIM_SHARED_DATA_HPP */
