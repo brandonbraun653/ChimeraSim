@@ -33,7 +33,13 @@ gen_intf_lib_variants(
 # ====================================================
 set(PUB_HDR chimera_sim_intf_inc)
 add_library(${PUB_HDR} INTERFACE)
-target_include_directories(${PUB_HDR} INTERFACE "./../" "./include")
+target_include_directories(${PUB_HDR} INTERFACE
+  "./../"
+  "./include"
+  "./lib/json/include"
+  "./lib/zeromq"
+)
+
 target_link_libraries(${PUB_HDR} INTERFACE
   etl_inc
   Boost::boost
