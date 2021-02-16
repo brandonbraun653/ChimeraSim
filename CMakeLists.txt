@@ -1,8 +1,10 @@
 include("${COMMON_TOOL_ROOT}/cmake/utility/embedded.cmake")
 
 
-add_subdirectory(source/peripherals)
 add_subdirectory(lib/json)
+add_subdirectory(source/peripherals)
+add_subdirectory(source/transport)
+add_subdirectory(source/shared)
 
 
 gen_intf_lib_variants(
@@ -16,9 +18,11 @@ gen_intf_lib_variants(
     chimera_sim_gpio
     chimera_sim_interrupt
     chimera_sim_pwm
+    chimera_sim_shared
     chimera_sim_spi
     chimera_sim_system
     chimera_sim_timer
+    chimera_sim_transport
     chimera_sim_uart
     chimera_sim_usart
     chimera_sim_usb
