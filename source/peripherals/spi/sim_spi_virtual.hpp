@@ -23,10 +23,24 @@
 #include <gmock/gmock.h>
 
 /* Simulator Includes */
+#include <ChimeraSim/source/controller/ctrl_types.hpp>
 #include <ChimeraSim/source/peripherals/spi/sim_spi_types.hpp>
+#include <ChimeraSim/source/transport/master_slave.hpp>
 
 namespace Chimera::SPI::SIM
 {
+  /*-------------------------------------------------------------------------------
+  Public Functions
+  -------------------------------------------------------------------------------*/
+  /**
+   *  Sets the backend driver style in use for the given peripheral index
+   *
+   *  @param[in]  type      Driver type to register
+   *  @param[in]  idx       Resource index for the peripheral to set
+   *  @return Chimera::Status_t
+   */
+  Chimera::Status_t setDriverType( const Chimera::SIM::Driver_t type, const size_t idx );
+
   /*-------------------------------------------------------------------------------
   Core object used to virtualize the driver for sim and test environments
   -------------------------------------------------------------------------------*/
@@ -98,6 +112,16 @@ namespace Chimera::SPI::SIM
 
   protected:
     VirtualState mHWState;
+  };
+
+  /*-------------------------------------------------------------------------------
+  Delegate that exposes a network connection to for communication
+  -------------------------------------------------------------------------------*/
+  class NetworkedSPI : public BasicSPI, public Chimera::SIM::Transport::SynchMasterSlave
+  {
+  public:
+    Chimera::Status_t init( const Chimera::SPI::DriverConfig &setupStruct ) final override;
+    Chimera::Status_t readWriteBytes( const void *const txBuffer, void *const rxBuffer, const size_t length ) final override;
   };
 }  // namespace Chimera::SPI::SIM
 

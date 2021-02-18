@@ -29,11 +29,12 @@ namespace Chimera::SPI::SIM
   -------------------------------------------------------------------------------*/
   class MockSPI;
   class BasicSPI;
+  class NetworkedSPI;
 
   /*-------------------------------------------------------------------------------
   Aliases
   -------------------------------------------------------------------------------*/
-  using SPIDevice = Chimera::SIM::VirtualDevice<BasicSPI, MockSPI, Driver_rPtr>;
+  using SPIDevice = Chimera::SIM::VirtualDevice<BasicSPI, MockSPI, NetworkedSPI, Driver_rPtr>;
 
   /*-------------------------------------------------------------------------------
   Constants

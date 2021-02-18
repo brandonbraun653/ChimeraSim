@@ -2,11 +2,9 @@ include("${COMMON_TOOL_ROOT}/cmake/utility/embedded.cmake")
 
 gen_static_lib_variants(
   TARGET
-    chimera_sim_spi
+    chimera_sim_controller
   SOURCES
-    sim_spi_basic.cpp
-    sim_spi_driver.cpp
-    sim_spi_networked.cpp
+    ctrl_intf.cpp
   PRV_LIBRARIES
     aurora_intf_inc
     chimera_intf_inc

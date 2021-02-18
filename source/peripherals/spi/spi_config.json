@@ -1,11 +1,11 @@
 {
   "version": 1,
   "peripheral": {
-    "name": "gpio",
-    "instances": 256
+    "name": "spi",
+    "instances": 6
   },
   "network": {
-    "tx_port_base": 10000,
-    "rx_port_base": 10500
+    "tx_port_base": 11000,
+    "rx_port_base": 11010
   }
 }

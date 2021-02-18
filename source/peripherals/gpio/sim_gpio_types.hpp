@@ -32,7 +32,7 @@ namespace Chimera::GPIO::SIM
   /*-------------------------------------------------------------------------------
   Aliases
   -------------------------------------------------------------------------------*/
-  using GPIODevice = Chimera::SIM::VirtualDevice<BasicGPIO, MockGPIO, Driver_rPtr>;
+  using GPIODevice = Chimera::SIM::VirtualDevice<BasicGPIO, MockGPIO, void, Driver_rPtr>;
 
   /*-------------------------------------------------------------------------------
   Constants

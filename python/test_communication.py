@@ -4,12 +4,12 @@ import zmq
 if __name__ == "__main__":
     context = zmq.Context()
     sender = context.socket(zmq.PUSH)
-    sender.connect("tcp://127.0.0.1:10000")
+    sender.connect("tcp://127.0.0.1:11010")
 
     receiver = context.socket(zmq.PULL)
-    receiver.connect("tcp://127.0.0.1:10001")
+    receiver.connect("tcp://127.0.0.1:11000")
 
     while True:
-        print("Sending Hello World!")
-        sender.send(b"Hello World!", zmq.DONTWAIT)
-        time.sleep(5)
+        print("Waiting for data")
+        received_data = receiver.recv()
+        sender.send(bytearray(10))

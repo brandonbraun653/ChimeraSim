@@ -10,10 +10,14 @@
  *******************************************************************************/
 
 /* STL Includes */
+#include <filesystem>
 #include <fstream>
 
 /* JSON Includes */
 #include <nlohmann/json.hpp>
+
+/* Aurora Includes */
+#include <Aurora/logging>
 
 /* Simulator Includes */
 #include <ChimeraSim/source/shared/json_parser.hpp>
@@ -25,17 +29,30 @@ namespace Chimera::SIM::JSON
   -------------------------------------------------------------------------------*/
   PeriphServerCfg_t parsePeriphServerConfig( const std::string &path )
   {
-    using namespace nlohmann;
+    using namespace Aurora::Logging;
 
-    PeriphServerCfg_t result;
-    std::ifstream ifs( path );
+    PeriphServerCfg_t result = {};
 
-    json j = json::parse( ifs );
+    /*-------------------------------------------------
+    Input Protection
+    -------------------------------------------------*/
+    if ( !std::filesystem::exists( path ) )
+    {
+      getRootSink()->flog( Level::LVL_DEBUG, "File does not exist %s\r\n", path.c_str() );
+      result.valid = false;
+      return result;
+    }
 
-    result.rxPortBase = j["network"]["rx_port_base"];
-    result.txPortBase = j["network"]["tx_port_base"];
+    /*-------------------------------------------------
+    Parse the json file
+    -------------------------------------------------*/
+    auto j = nlohmann::json::parse( std::ifstream( path ) );
+
+    result.name       = j[ "peripheral" ][ "name" ];
+    result.rxPortBase = j[ "network" ][ "rx_port_base" ];
+    result.txPortBase = j[ "network" ][ "tx_port_base" ];
     result.valid = true;
 
     return result;
   }
-}  // namespace Chimera::SIM::JSON
+}    // namespace Chimera::SIM::JSON

@@ -29,15 +29,21 @@ namespace Chimera::SIM
   -------------------------------------------------------------------------------*/
   /**
    *  Generic device descriptor for a virtual peripheral
+   *
+   *  @class Default_t: Default driver behavior class type
+   *  @class Network_t: Driver that exposes communication channels via network ports
+   *  @class Mock_t:    Mock object used for testing purposes
+   *  @type RealPtr_t:  Pointer to the real Chimera driver instance type
    */
-  template<class Default_t, class Mock_t, typename RealPtr_t>
+  template<class Default_t, class Mock_t, class Network_t, typename RealPtr_t>
   struct VirtualDevice
   {
-    std::recursive_mutex lock; /**< Simulator access protection */
-    Default_t *defaultDriver;  /**< Default behavior driver */
-    Mock_t *virtualDriver;     /**< Runtime device implementation */
-    RealPtr_t realDriver;      /**< Real driver Chimera hooks into */
-    size_t resourceIndex;      /**< Expected resource index associated with the driver */
+    std::recursive_mutex lock;  /**< Simulator access protection */
+    Default_t *defaultDriver;   /**< Default behavior driver */
+    Network_t *networkedDriver; /**< Network driver variant */
+    Mock_t *virtualDriver;      /**< Runtime device implementation */
+    RealPtr_t realDriver;       /**< Real driver Chimera hooks into */
+    size_t resourceIndex;       /**< Expected resource index associated with the driver */
     bool initialized;
 
     VirtualDevice() :
@@ -46,6 +52,6 @@ namespace Chimera::SIM
     {
     }
   };
-}  // namespace Chimera::SIM
+}    // namespace Chimera::SIM
 
-#endif  /* !CHIMERA_SIM_SHARED_DATA_HPP */
+#endif /* !CHIMERA_SIM_SHARED_DATA_HPP */

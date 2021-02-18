@@ -36,6 +36,7 @@ namespace Chimera::SIM::JSON
   struct PeriphServerCfg_t
   {
     Chimera::Peripheral::Type periphType; /**< Peripheral type in use */
+    std::string name;
     size_t txPortBase;                    /**< Transmit port from peripheral perspective */
     size_t rxPortBase;                    /**< Receive port from peripheral perspective */
 

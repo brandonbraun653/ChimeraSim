@@ -54,9 +54,11 @@ namespace Chimera::SIM::Transport
      *  @param[in]  timeout         How long to wait for the endpoint to respond to TX/RX request
      *  @return Chimera::Status_t
      */
-    Chimera::Status_t doTransaction( const void *const txBuffer, void *const rxBuffer, const size_t length, const size_t timeout );
+    Chimera::Status_t doTransaction( const void *const txBuffer, void *const rxBuffer, const size_t length,
+                                     const std::chrono::seconds timeout );
 
   private:
+    bool mInitialized;
     zmq::context_t mContext;
     zmq::socket_t mReceiver;
     zmq::socket_t mSender;

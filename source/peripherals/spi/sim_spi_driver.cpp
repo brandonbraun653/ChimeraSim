@@ -292,10 +292,11 @@ namespace Chimera::SPI
         }
 
         std::lock_guard<std::recursive_mutex> lk( dev.lock );
-        dev.realDriver    = new Chimera::SPI::Driver();
-        dev.virtualDriver = new ::testing::NiceMock<Chimera::SPI::SIM::MockSPI>();
-        dev.defaultDriver = new Chimera::SPI::SIM::BasicSPI();
-        dev.initialized   = true;
+        dev.realDriver      = new Chimera::SPI::Driver();
+        dev.virtualDriver   = new ::testing::NiceMock<Chimera::SPI::SIM::MockSPI>();
+        dev.defaultDriver   = new Chimera::SPI::SIM::BasicSPI();
+        dev.networkedDriver = new Chimera::SPI::SIM::NetworkedSPI();
+        dev.initialized     = true;
 
         dev.virtualDriver->DelegateToFake( dev.defaultDriver );
       }
@@ -339,8 +340,56 @@ namespace Chimera::SPI
     }
   }    // namespace Backend
 
+
+  /*-------------------------------------------------------------------------------
+  Simulator
+  -------------------------------------------------------------------------------*/
   namespace SIM
   {
+    /*-------------------------------------------------------------------------------
+    Public Functions
+    -------------------------------------------------------------------------------*/
+    Chimera::Status_t setDriverType( const Chimera::SIM::Driver_t type, const size_t idx )
+    {
+      using namespace Chimera::SIM;
+
+      /*-------------------------------------------------
+      Input Protection
+      -------------------------------------------------*/
+      if ( !( type < Driver_t::NUM_OPTIONS ) || !( idx < NUM_DRIVERS ) )
+      {
+        return Chimera::Status::INVAL_FUNC_PARAM;
+      }
+      else if ( !s_devices[ idx ].initialized )
+      {
+        return Chimera::Status::NOT_READY;
+      }
+
+      /*-------------------------------------------------
+      Invoke the re-registration
+      -------------------------------------------------*/
+      std::lock_guard<std::recursive_mutex> lk( s_devices[ idx ].lock );
+      switch ( type )
+      {
+        case Driver_t::BASIC_STUB:
+          s_devices[ idx ].virtualDriver->DelegateToFake( s_devices[ idx ].defaultDriver );
+          break;
+
+        case Driver_t::NETWORKED_CONTROL:
+          s_devices[ idx ].virtualDriver->DelegateToFake( s_devices[ idx ].networkedDriver );
+          break;
+
+        default:
+          return Chimera::Status::NOT_SUPPORTED;
+          break;
+      };
+
+      return Chimera::Status::OK;
+    }
+
+    /*-------------------------------------------------------------------------------
+    Mock Driver
+    -------------------------------------------------------------------------------*/
     void MockSPI::DelegateToFake( ISPI *const fake )
     {
       using ::testing::_;
@@ -394,11 +443,10 @@ namespace Chimera::SPI
         return mFake->setClockFrequency( a, b );
       } );
 
-      ON_CALL( *this, registerListener )
-          .WillByDefault( [ this ]( Chimera::Event::Actionable &a, const size_t b, size_t &c ) {
-            RT_HARD_ASSERT( mFake );
-            return mFake->registerListener( a, b, c );
-          } );
+      ON_CALL( *this, registerListener ).WillByDefault( [ this ]( Chimera::Event::Actionable &a, const size_t b, size_t &c ) {
+        RT_HARD_ASSERT( mFake );
+        return mFake->registerListener( a, b, c );
+      } );
 
       ON_CALL( *this, removeListener ).WillByDefault( [ this ]( const size_t a, const size_t b ) {
         RT_HARD_ASSERT( mFake );
@@ -473,7 +521,7 @@ namespace Chimera::SPI
         }
       }
 
-      if( !isStoredDriver )
+      if ( !isStoredDriver )
       {
         return false;
       }
@@ -484,11 +532,8 @@ namespace Chimera::SPI
       -------------------------------------------------*/
       std::lock_guard<std::recursive_mutex> lk( s_devices[ idx ].lock );
 
-      /* clang-format off */
-      return ( s_devices[ idx ].realDriver &&
-               s_devices[ idx ].virtualDriver &&
+      return ( s_devices[ idx ].realDriver && s_devices[ idx ].virtualDriver &&
                ( s_devices[ idx ].resourceIndex < SIM::NUM_DRIVERS ) );
-      /* clang-format on */
     }
 
 
