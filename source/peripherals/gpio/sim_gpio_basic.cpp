@@ -72,7 +72,7 @@ namespace Chimera::GPIO::SIM
 
   Chimera::Status_t BasicGPIO::attachInterrupt( Chimera::Function::vGeneric &func, const Chimera::EXTI::EdgeTrigger trigger )
   {
-    return Chimera::Status::NOT_SUPPORTED;
+    return Chimera::Status::OK;
   }
 
   void BasicGPIO::detachInterrupt()
