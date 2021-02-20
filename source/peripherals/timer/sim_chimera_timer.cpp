@@ -5,7 +5,7 @@
  *  Description:
  *    Simulator variant of the core chimera functionality.
  *
- *  2019-2020 | Brandon Braun | brandonbraun653@gmail.com
+ *  2019-2021 | Brandon Braun | brandonbraun653@gmail.com
  ********************************************************************************/
 
 #if defined( CHIMERA_SIMULATOR )
@@ -23,8 +23,19 @@
 
 namespace ChimeraSim::Timer
 {
+  static size_t s_system_start;
+
+  static size_t ms_time_since_epoch()
+  {
+    using namespace std::chrono;
+
+    auto duration = system_clock::now().time_since_epoch();
+    return duration_cast<milliseconds>( duration ).count();
+  }
+
   Chimera::Status_t initialize()
   {
+    s_system_start = ms_time_since_epoch();
     return Chimera::Status::OK;
   }
 
@@ -35,7 +46,7 @@ namespace ChimeraSim::Timer
 
   size_t millis()
   {
-    return 0;
+    return ms_time_since_epoch() - s_system_start;
   }
 
   void delayMilliseconds( const size_t val )
