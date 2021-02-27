@@ -79,10 +79,6 @@ namespace Chimera::SIM::Transport
     {
       return Chimera::Status::FAIL;
     }
-    else if( !mSender.connected() || !mSender.connected() )
-    {
-      return Chimera::Status::NOT_READY;
-    }
 
     /*-------------------------------------------------
     Prepare the data buffers
