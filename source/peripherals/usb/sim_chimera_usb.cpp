@@ -21,6 +21,6 @@ namespace Chimera::USB::Backend
     registry.initialize  = nullptr;
     registry.reset       = nullptr;
 
-    return Chimera::Status::OK;
+    return Chimera::Status::NOT_SUPPORTED;
   }
 }  // namespace Chimera::USB::Backend
