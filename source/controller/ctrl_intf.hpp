@@ -14,6 +14,7 @@
 
 /* Chimera Includes */
 #include <Chimera/common>
+#include <Chimera/peripheral>
 
 /* Simulator Includes */
 #include <ChimeraSim/source/controller/ctrl_types.hpp>
