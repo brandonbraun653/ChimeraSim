@@ -40,7 +40,7 @@ namespace Chimera::SIM::Transport
 
     if ( !cfg.valid )
     {
-      getRootSink()->flog( Level::LVL_DEBUG, "Failed to boot server. Invalid configuration.\r\n" );
+      LOG_DEBUG( "Failed to boot server. Invalid configuration.\r\n" );
       return false;
     }
 
@@ -51,7 +51,7 @@ namespace Chimera::SIM::Transport
     std::string rxAddress = "tcp://127.0.0.1:" + std::to_string( rxPort );
     mReceiver             = zmq::socket_t( mContext, zmq::socket_type::pull );
     mReceiver.bind( rxAddress );
-    getRootSink()->flog( Level::LVL_DEBUG, "Opened %s %d RX port at %s\r\n", cfg.name.c_str(), periphIndex, rxAddress.c_str() );
+    LOG_DEBUG( "Opened %s %d RX port at %s\r\n", cfg.name.c_str(), periphIndex, rxAddress.c_str() );
 
     /*-------------------------------------------------
     Boot the TX port
@@ -60,7 +60,7 @@ namespace Chimera::SIM::Transport
     std::string txAddress = "tcp://127.0.0.1:" + std::to_string( txPort );
     mSender               = zmq::socket_t( mContext, zmq::socket_type::push );
     mSender.bind( txAddress );
-    getRootSink()->flog( Level::LVL_DEBUG, "Opened %s %d TX port at %s\r\n", cfg.name.c_str(), periphIndex, txAddress.c_str() );
+    LOG_DEBUG( "Opened %s %d TX port at %s\r\n", cfg.name.c_str(), periphIndex, txAddress.c_str() );
 
     mInitialized = true;
     return true;
@@ -99,7 +99,7 @@ namespace Chimera::SIM::Transport
     -------------------------------------------------*/
     if( rxData.size() != length )
     {
-      getRootSink()->flog( Level::LVL_DEBUG, "Failed SPI transaction\r\n" );
+      LOG_DEBUG( "Failed SPI transaction\r\n" );
       return Chimera::Status::FAIL;
     }
     else

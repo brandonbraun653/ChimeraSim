@@ -44,7 +44,7 @@ namespace Chimera::SPI::SIM
     -------------------------------------------------*/
     if ( this->bootServer( cfgFile.string(), static_cast<size_t>( setupStruct.HWInit.hwChannel ) ) )
     {
-      getRootSink()->flog( Level::LVL_DEBUG, "Server initialized\r\n" );
+      LOG_DEBUG( "Server initialized\r\n" );
       return Chimera::Status::OK;
     }
     else

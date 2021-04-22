@@ -38,7 +38,7 @@ namespace Chimera::SIM::JSON
     -------------------------------------------------*/
     if ( !std::filesystem::exists( path ) )
     {
-      getRootSink()->flog( Level::LVL_DEBUG, "File does not exist %s\r\n", path.c_str() );
+      LOG_DEBUG( "File does not exist %s\r\n", path.c_str() );
       result.valid = false;
       return result;
     }
