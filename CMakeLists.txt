@@ -48,7 +48,7 @@ target_include_directories(${PUB_HDR} INTERFACE
 
 target_link_libraries(${PUB_HDR} INTERFACE
   etl_inc
-  Boost::boost
+
   chimera_intf_inc
 )
 
