@@ -32,69 +32,69 @@ namespace Chimera::USART
   -------------------------------------------------*/
   Chimera::Status_t Driver::assignHW( const Chimera::Serial::Channel channel, const Chimera::Serial::IOPins &pins )
   {
-    return Chimera::Status::NOT_SUPPORTED;
+    return Chimera::Status::OK;
   }
 
 
   Chimera::Status_t Driver::begin( const Chimera::Hardware::PeripheralMode txMode,
                                    const Chimera::Hardware::PeripheralMode rxMode )
   {
-    return Chimera::Status::NOT_SUPPORTED;
+    return Chimera::Status::OK;
   }
 
 
   Chimera::Status_t Driver::end()
   {
-    return Chimera::Status::NOT_SUPPORTED;
+    return Chimera::Status::OK;
   }
 
 
   Chimera::Status_t Driver::configure( const Chimera::Serial::Config &config )
   {
-    return Chimera::Status::NOT_SUPPORTED;
+    return Chimera::Status::OK;
   }
 
 
   Chimera::Status_t Driver::setBaud( const uint32_t baud )
   {
-    return Chimera::Status::NOT_SUPPORTED;
+    return Chimera::Status::OK;
   }
 
 
   Chimera::Status_t Driver::setMode( const Chimera::Hardware::SubPeripheral periph,
                                      const Chimera::Hardware::PeripheralMode mode )
   {
-    return Chimera::Status::NOT_SUPPORTED;
+    return Chimera::Status::OK;
   }
 
 
   Chimera::Status_t Driver::write( const void *const buffer, const size_t length )
   {
-    return Chimera::Status::NOT_SUPPORTED;
+    return Chimera::Status::OK;
   }
 
 
   Chimera::Status_t Driver::read( void *const buffer, const size_t length )
   {
-    return Chimera::Status::NOT_SUPPORTED;
+    return Chimera::Status::OK;
   }
 
 
   Chimera::Status_t Driver::flush( const Chimera::Hardware::SubPeripheral periph )
   {
-    return Chimera::Status::NOT_SUPPORTED;
+    return Chimera::Status::OK;
   }
 
 
   Chimera::Status_t Driver::toggleAsyncListening( const bool state )
   {
-    return Chimera::Status::NOT_SUPPORTED;
+    return Chimera::Status::OK;
   }
 
 
   Chimera::Status_t Driver::readAsync( uint8_t *const buffer, const size_t len )
   {
-    return Chimera::Status::NOT_SUPPORTED;
+    return Chimera::Status::OK;
   }
 
 
@@ -102,12 +102,12 @@ namespace Chimera::USART
                                              Chimera::Serial::CircularBuffer & userBuffer, uint8_t *const hwBuffer,
                                              const size_t hwBufferSize )
   {
-    return Chimera::Status::NOT_SUPPORTED;
+    return Chimera::Status::OK;
   }
 
   Chimera::Status_t Driver::disableBuffering( const Chimera::Hardware::SubPeripheral periph )
   {
-    return Chimera::Status::NOT_SUPPORTED;
+    return Chimera::Status::OK;
   }
 
 
@@ -126,14 +126,14 @@ namespace Chimera::USART
   -------------------------------------------------*/
   Chimera::Status_t Driver::await( const Chimera::Event::Trigger event, const size_t timeout )
   {
-    return Chimera::Status::NOT_SUPPORTED;
+    return Chimera::Status::OK;
   }
 
 
   Chimera::Status_t Driver::await( const Chimera::Event::Trigger event, Chimera::Thread::BinarySemaphore &notifier,
                                    const size_t timeout )
   {
-    return Chimera::Status::NOT_SUPPORTED;
+    return Chimera::Status::OK;
   }
 
   /*-------------------------------------------------
@@ -164,19 +164,23 @@ namespace Chimera::USART
   {
     Chimera::Status_t initialize()
     {
-      return Chimera::Status::NOT_SUPPORTED;
+      return Chimera::Status::OK;
     }
 
 
     Chimera::Status_t reset()
     {
-      return Chimera::Status::NOT_SUPPORTED;
+      return Chimera::Status::OK;
     }
 
 
     bool isChannelUSART( const Chimera::Serial::Channel channel )
     {
-      return false;
+      /*-------------------------------------------------
+      By default select true. Until we have a mapping for
+      USART/UART channels, either driver works fine.
+      -------------------------------------------------*/
+      return true;
     }
 
 

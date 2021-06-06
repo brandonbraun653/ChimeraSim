@@ -4,7 +4,7 @@ gen_static_lib_variants(
   TARGET
     chimera_sim_adc
   SOURCES
-    sim_chimera_adc.cpp
+    sim_adc_basic.cpp
   PRV_LIBRARIES
     aurora_intf_inc
     chimera_intf_inc
