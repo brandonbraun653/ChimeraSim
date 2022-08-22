@@ -10,18 +10,7 @@
 
 /* Chimera Includes */
 #include <Chimera/common>
-#include <Chimera/pwm>
 
 namespace Chimera::PWM::Backend
 {
-  Chimera::Status_t registerDriver( DriverRegistration &registry )
-  {
-    registry.getDriver            = nullptr;
-    registry.initialize           = nullptr;
-    registry.isSupported          = false;
-    registry.numSupportedChannels = nullptr;
-    registry.reset                = nullptr;
-
-    return Chimera::Status::NOT_SUPPORTED;
-  }
 }  // namespace Chimera::PWM::Backend
