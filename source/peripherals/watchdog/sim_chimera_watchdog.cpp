@@ -30,13 +30,13 @@ namespace Chimera::Watchdog
     }
 
 
-    Chimera::Watchdog::Independent_sPtr getDriver( const IChannel channel )
+    Chimera::Watchdog::Independent_rPtr getDriver( const IChannel channel )
     {
       return nullptr;
     }
 
 
-    Chimera::Watchdog::Window_sPtr getDriver( const WChannel channel )
+    Chimera::Watchdog::Window_rPtr getDriver( const WChannel channel )
     {
       return nullptr;
     }

@@ -27,7 +27,6 @@ gen_intf_lib_variants(
     chimera_sim_transport
     chimera_sim_uart
     chimera_sim_usart
-    chimera_sim_usb
     chimera_sim_watchdog
 
   EXPORT_DIR

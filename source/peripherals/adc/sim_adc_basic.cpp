@@ -72,8 +72,7 @@ namespace Chimera::ADC
   {
   }
 
-
-  float Driver::toVoltage( const Chimera::ADC::Sample sample )
+  float Driver::toVoltage( const Chimera::ADC::Sample &sample )
   {
     return 0.0f;
   }

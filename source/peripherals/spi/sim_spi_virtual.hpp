@@ -56,8 +56,6 @@ namespace Chimera::SPI::SIM
     MOCK_METHOD( Chimera::Status_t, readWriteBytes, ( const void *const, void *const, const size_t ), ( override ) );
     MOCK_METHOD( Chimera::Status_t, setPeripheralMode, ( const Chimera::Hardware::PeripheralMode ), ( override ) );
     MOCK_METHOD( Chimera::Status_t, setClockFrequency, ( const size_t, const size_t ), ( override ) );
-    MOCK_METHOD( Chimera::Status_t, registerListener, ( Chimera::Event::Actionable &, const size_t, size_t & ), ( override ) );
-    MOCK_METHOD( Chimera::Status_t, removeListener, ( const size_t, const size_t ), ( override ) );
     MOCK_METHOD( Chimera::Status_t, await, ( const Chimera::Event::Trigger, const size_t ), ( override ) );
     MOCK_METHOD( Chimera::Status_t, await, ( const Chimera::Event::Trigger, Chimera::Thread::BinarySemaphore &, const size_t ), ( override ) );
     MOCK_METHOD( Chimera::SPI::DriverConfig, getInit, (), ( override ) );
@@ -99,8 +97,6 @@ namespace Chimera::SPI::SIM
     virtual Chimera::Status_t setClockFrequency( const size_t freq, const size_t tolerance ) override;
     virtual Chimera::SPI::DriverConfig getInit() override;
     virtual size_t getClockFrequency() override;
-    virtual Chimera::Status_t registerListener( Chimera::Event::Actionable &listener, const size_t timeout, size_t &registrationID ) override;
-    virtual Chimera::Status_t removeListener( const size_t registrationID, const size_t timeout ) override;
     virtual Chimera::Status_t await( const Chimera::Event::Trigger event, const size_t timeout ) override;
     virtual Chimera::Status_t await( const Chimera::Event::Trigger event, Chimera::Thread::BinarySemaphore &notifier,
                              const size_t timeout ) override;

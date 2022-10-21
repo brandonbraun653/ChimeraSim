@@ -32,7 +32,7 @@ namespace Chimera::GPIO
   /*-------------------------------------------------------------------------------
   Driver Implementation
   -------------------------------------------------------------------------------*/
-  Driver::Driver() : mDriver( nullptr )
+  Driver::Driver() : mImpl( nullptr )
   {
   }
 
@@ -59,7 +59,7 @@ namespace Chimera::GPIO
     /*-------------------------------------------------
     Store reference to this device driver
     -------------------------------------------------*/
-    mDriver = reinterpret_cast<void *>( &s_devices[ idx ] );
+    mImpl = reinterpret_cast<void *>( &s_devices[ idx ] );
 
     /*-------------------------------------------------
     Update the driver's notion of it's resource index
@@ -89,7 +89,7 @@ namespace Chimera::GPIO
     /*-------------------------------------------------
     Store reference to this device driver
     -------------------------------------------------*/
-    mDriver = reinterpret_cast<void *>( &s_devices[ idx ] );
+    mImpl = reinterpret_cast<void *>( &s_devices[ idx ] );
 
     /*-------------------------------------------------
     Update the driver's notion of it's resource index
@@ -107,8 +107,8 @@ namespace Chimera::GPIO
 
   Chimera::Status_t Driver::setMode( const Chimera::GPIO::Drive drive, const Chimera::GPIO::Pull pull )
   {
-    RT_HARD_ASSERT( SIM::validateDriver( mDriver ) );
-    auto driver = reinterpret_cast<SIM::GPIODevice *>( mDriver );
+    RT_HARD_ASSERT( SIM::validateDriver( mImpl ) );
+    auto driver = reinterpret_cast<SIM::GPIODevice *>( mImpl );
 
     std::lock_guard<std::recursive_mutex> lk( driver->lock );
     return driver->virtualDriver->setMode( drive, pull );
@@ -117,8 +117,8 @@ namespace Chimera::GPIO
 
   Chimera::Status_t Driver::setState( const Chimera::GPIO::State state )
   {
-    RT_HARD_ASSERT( SIM::validateDriver( mDriver ) );
-    auto driver = reinterpret_cast<SIM::GPIODevice *>( mDriver );
+    RT_HARD_ASSERT( SIM::validateDriver( mImpl ) );
+    auto driver = reinterpret_cast<SIM::GPIODevice *>( mImpl );
 
     std::lock_guard<std::recursive_mutex> lk( driver->lock );
     return driver->virtualDriver->setState( state );
@@ -127,8 +127,8 @@ namespace Chimera::GPIO
 
   Chimera::Status_t Driver::getState( Chimera::GPIO::State &state )
   {
-    RT_HARD_ASSERT( SIM::validateDriver( mDriver ) );
-    auto driver = reinterpret_cast<SIM::GPIODevice *>( mDriver );
+    RT_HARD_ASSERT( SIM::validateDriver( mImpl ) );
+    auto driver = reinterpret_cast<SIM::GPIODevice *>( mImpl );
 
     std::lock_guard<std::recursive_mutex> lk( driver->lock );
     return driver->virtualDriver->getState( state );
@@ -137,8 +137,8 @@ namespace Chimera::GPIO
 
   Chimera::Status_t Driver::toggle()
   {
-    RT_HARD_ASSERT( SIM::validateDriver( mDriver ) );
-    auto driver = reinterpret_cast<SIM::GPIODevice *>( mDriver );
+    RT_HARD_ASSERT( SIM::validateDriver( mImpl ) );
+    auto driver = reinterpret_cast<SIM::GPIODevice *>( mImpl );
 
     std::lock_guard<std::recursive_mutex> lk( driver->lock );
     return driver->virtualDriver->toggle();
@@ -147,8 +147,8 @@ namespace Chimera::GPIO
 
   Chimera::Status_t Driver::attachInterrupt( Chimera::Function::vGeneric &func, const Chimera::EXTI::EdgeTrigger trigger )
   {
-    RT_HARD_ASSERT( SIM::validateDriver( mDriver ) );
-    auto driver = reinterpret_cast<SIM::GPIODevice *>( mDriver );
+    RT_HARD_ASSERT( SIM::validateDriver( mImpl ) );
+    auto driver = reinterpret_cast<SIM::GPIODevice *>( mImpl );
 
     std::lock_guard<std::recursive_mutex> lk( driver->lock );
     return driver->virtualDriver->attachInterrupt( func, trigger );
@@ -157,8 +157,8 @@ namespace Chimera::GPIO
 
   void Driver::detachInterrupt()
   {
-    RT_HARD_ASSERT( SIM::validateDriver( mDriver ) );
-    auto driver = reinterpret_cast<SIM::GPIODevice *>( mDriver );
+    RT_HARD_ASSERT( SIM::validateDriver( mImpl ) );
+    auto driver = reinterpret_cast<SIM::GPIODevice *>( mImpl );
 
     std::lock_guard<std::recursive_mutex> lk( driver->lock );
     driver->virtualDriver->detachInterrupt();
@@ -167,64 +167,13 @@ namespace Chimera::GPIO
 
   Chimera::EXTI::EventLine_t Driver::getInterruptLine()
   {
-    RT_HARD_ASSERT( SIM::validateDriver( mDriver ) );
-    auto driver = reinterpret_cast<SIM::GPIODevice *>( mDriver );
+    RT_HARD_ASSERT( SIM::validateDriver( mImpl ) );
+    auto driver = reinterpret_cast<SIM::GPIODevice *>( mImpl );
 
     std::lock_guard<std::recursive_mutex> lk( driver->lock );
     return driver->virtualDriver->getInterruptLine();
   }
 
-  /*-------------------------------------------------
-  Interface: Lockable
-  -------------------------------------------------*/
-  void Driver::lock()
-  {
-    RT_HARD_ASSERT( SIM::validateDriver( mDriver ) );
-    auto driver = reinterpret_cast<SIM::GPIODevice *>( mDriver );
-
-    std::lock_guard<std::recursive_mutex> lk( driver->lock );
-    driver->virtualDriver->lock();
-  }
-
-
-  void Driver::lockFromISR()
-  {
-    RT_HARD_ASSERT( SIM::validateDriver( mDriver ) );
-    auto driver = reinterpret_cast<SIM::GPIODevice *>( mDriver );
-
-    std::lock_guard<std::recursive_mutex> lk( driver->lock );
-    driver->virtualDriver->lockFromISR();
-  }
-
-
-  bool Driver::try_lock_for( const size_t timeout )
-  {
-    RT_HARD_ASSERT( SIM::validateDriver( mDriver ) );
-    auto driver = reinterpret_cast<SIM::GPIODevice *>( mDriver );
-
-    std::lock_guard<std::recursive_mutex> lk( driver->lock );
-    return driver->virtualDriver->try_lock_for( timeout );
-  }
-
-
-  void Driver::unlock()
-  {
-    RT_HARD_ASSERT( SIM::validateDriver( mDriver ) );
-    auto driver = reinterpret_cast<SIM::GPIODevice *>( mDriver );
-
-    std::lock_guard<std::recursive_mutex> lk( driver->lock );
-    driver->virtualDriver->unlock();
-  }
-
-
-  void Driver::unlockFromISR()
-  {
-    RT_HARD_ASSERT( SIM::validateDriver( mDriver ) );
-    auto driver = reinterpret_cast<SIM::GPIODevice *>( mDriver );
-
-    std::lock_guard<std::recursive_mutex> lk( driver->lock );
-    driver->virtualDriver->unlockFromISR();
-  }
 
   /*-------------------------------------------------------------------------------
   Backend Driver Registry

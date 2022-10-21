@@ -19,7 +19,7 @@ namespace Chimera::UART
   /*-------------------------------------------------------------------------------
   Driver Implementation
   -------------------------------------------------------------------------------*/
-  Driver::Driver() : mChannel( Chimera::Serial::Channel::NOT_SUPPORTED )
+  Driver::Driver()
   {
   }
 
@@ -99,7 +99,7 @@ namespace Chimera::UART
 
 
   Chimera::Status_t Driver::enableBuffering( const Chimera::Hardware::SubPeripheral periph,
-                                             Chimera::Serial::CircularBuffer & userBuffer, uint8_t *const hwBuffer,
+                                             Chimera::Serial::CircularBuffer &userBuffer, uint8_t *const hwBuffer,
                                              const size_t hwBufferSize )
   {
     return Chimera::Status::NOT_SUPPORTED;
@@ -121,44 +121,6 @@ namespace Chimera::UART
   {
   }
 
-  /*-------------------------------------------------
-  Interface: AsyncIO
-  -------------------------------------------------*/
-  Chimera::Status_t Driver::await( const Chimera::Event::Trigger event, const size_t timeout )
-  {
-    return Chimera::Status::NOT_SUPPORTED;
-  }
-
-
-  Chimera::Status_t Driver::await( const Chimera::Event::Trigger event, Chimera::Thread::BinarySemaphore &notifier,
-                                   const size_t timeout )
-  {
-    return Chimera::Status::NOT_SUPPORTED;
-  }
-
-  /*-------------------------------------------------
-  Interface: Lockable
-  -------------------------------------------------*/
-  void Driver::lock()
-  {
-  }
-
-  void Driver::lockFromISR()
-  {
-  }
-
-  bool Driver::try_lock_for( const size_t timeout )
-  {
-    return false;
-  }
-
-  void Driver::unlock()
-  {
-  }
-
-  void Driver::unlockFromISR()
-  {
-  }
 
   namespace Backend
   {
@@ -187,11 +149,11 @@ namespace Chimera::UART
 
     Chimera::Status_t registerDriver( struct Chimera::UART::Backend::DriverConfig &cfg )
     {
-      cfg.isSupported    = true;
-      cfg.getDriver      = getDriver;
-      cfg.initialize     = initialize;
+      cfg.isSupported   = true;
+      cfg.getDriver     = getDriver;
+      cfg.initialize    = initialize;
       cfg.isChannelUART = isChannelUART;
-      cfg.reset          = reset;
+      cfg.reset         = reset;
 
       return Chimera::Status::OK;
     }
@@ -201,6 +163,6 @@ namespace Chimera::UART
   {
   }
 
-}  // namespace Chimera::UART
+}    // namespace Chimera::UART
 
-#endif  /* CHIMERA_SIMULATOR */
+#endif /* CHIMERA_SIMULATOR */

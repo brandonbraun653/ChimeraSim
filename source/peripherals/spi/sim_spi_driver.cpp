@@ -32,7 +32,7 @@ namespace Chimera::SPI
   /*-------------------------------------------------------------------------------
   Driver Implementation
   -------------------------------------------------------------------------------*/
-  Driver::Driver() : mDriver( nullptr )
+  Driver::Driver()
   {
   }
 
@@ -58,7 +58,7 @@ namespace Chimera::SPI
     /*-------------------------------------------------
     Store reference to this device driver
     -------------------------------------------------*/
-    mDriver = reinterpret_cast<void *>( &s_devices[ idx ] );
+    mImpl = reinterpret_cast<void *>( &s_devices[ idx ] );
 
     /*-------------------------------------------------
     Update the driver's notion of it's resource index
@@ -76,8 +76,8 @@ namespace Chimera::SPI
 
   Chimera::SPI::DriverConfig Driver::getInit()
   {
-    RT_HARD_ASSERT( SIM::validateDriver( mDriver ) );
-    auto driver = reinterpret_cast<SIM::SPIDevice *>( mDriver );
+    RT_HARD_ASSERT( SIM::validateDriver( mImpl ) );
+    auto driver = reinterpret_cast<SIM::SPIDevice *>( mImpl );
 
     std::lock_guard<std::recursive_mutex> lk( driver->lock );
     return driver->virtualDriver->getInit();
@@ -86,8 +86,8 @@ namespace Chimera::SPI
 
   Chimera::Status_t Driver::deInit()
   {
-    RT_HARD_ASSERT( SIM::validateDriver( mDriver ) );
-    auto driver = reinterpret_cast<SIM::SPIDevice *>( mDriver );
+    RT_HARD_ASSERT( SIM::validateDriver( mImpl ) );
+    auto driver = reinterpret_cast<SIM::SPIDevice *>( mImpl );
 
     std::lock_guard<std::recursive_mutex> lk( driver->lock );
     return driver->virtualDriver->deInit();
@@ -96,8 +96,8 @@ namespace Chimera::SPI
 
   Chimera::Status_t Driver::setChipSelect( const Chimera::GPIO::State value )
   {
-    RT_HARD_ASSERT( SIM::validateDriver( mDriver ) );
-    auto driver = reinterpret_cast<SIM::SPIDevice *>( mDriver );
+    RT_HARD_ASSERT( SIM::validateDriver( mImpl ) );
+    auto driver = reinterpret_cast<SIM::SPIDevice *>( mImpl );
 
     std::lock_guard<std::recursive_mutex> lk( driver->lock );
     return driver->virtualDriver->setChipSelect( value );
@@ -106,8 +106,8 @@ namespace Chimera::SPI
 
   Chimera::Status_t Driver::setChipSelectControlMode( const Chimera::SPI::CSMode mode )
   {
-    RT_HARD_ASSERT( SIM::validateDriver( mDriver ) );
-    auto driver = reinterpret_cast<SIM::SPIDevice *>( mDriver );
+    RT_HARD_ASSERT( SIM::validateDriver( mImpl ) );
+    auto driver = reinterpret_cast<SIM::SPIDevice *>( mImpl );
 
     std::lock_guard<std::recursive_mutex> lk( driver->lock );
     return driver->virtualDriver->setChipSelectControlMode( mode );
@@ -116,8 +116,8 @@ namespace Chimera::SPI
 
   Chimera::Status_t Driver::writeBytes( const void *const txBuffer, const size_t length )
   {
-    RT_HARD_ASSERT( SIM::validateDriver( mDriver ) );
-    auto driver = reinterpret_cast<SIM::SPIDevice *>( mDriver );
+    RT_HARD_ASSERT( SIM::validateDriver( mImpl ) );
+    auto driver = reinterpret_cast<SIM::SPIDevice *>( mImpl );
 
     std::lock_guard<std::recursive_mutex> lk( driver->lock );
     return driver->virtualDriver->writeBytes( txBuffer, length );
@@ -126,8 +126,8 @@ namespace Chimera::SPI
 
   Chimera::Status_t Driver::readBytes( void *const rxBuffer, const size_t length )
   {
-    RT_HARD_ASSERT( SIM::validateDriver( mDriver ) );
-    auto driver = reinterpret_cast<SIM::SPIDevice *>( mDriver );
+    RT_HARD_ASSERT( SIM::validateDriver( mImpl ) );
+    auto driver = reinterpret_cast<SIM::SPIDevice *>( mImpl );
 
     std::lock_guard<std::recursive_mutex> lk( driver->lock );
     return driver->virtualDriver->readBytes( rxBuffer, length );
@@ -136,8 +136,8 @@ namespace Chimera::SPI
 
   Chimera::Status_t Driver::readWriteBytes( const void *const txBuffer, void *const rxBuffer, const size_t length )
   {
-    RT_HARD_ASSERT( SIM::validateDriver( mDriver ) );
-    auto driver = reinterpret_cast<SIM::SPIDevice *>( mDriver );
+    RT_HARD_ASSERT( SIM::validateDriver( mImpl ) );
+    auto driver = reinterpret_cast<SIM::SPIDevice *>( mImpl );
 
     std::lock_guard<std::recursive_mutex> lk( driver->lock );
     return driver->virtualDriver->readWriteBytes( txBuffer, rxBuffer, length );
@@ -146,8 +146,8 @@ namespace Chimera::SPI
 
   Chimera::Status_t Driver::setPeripheralMode( const Chimera::Hardware::PeripheralMode mode )
   {
-    RT_HARD_ASSERT( SIM::validateDriver( mDriver ) );
-    auto driver = reinterpret_cast<SIM::SPIDevice *>( mDriver );
+    RT_HARD_ASSERT( SIM::validateDriver( mImpl ) );
+    auto driver = reinterpret_cast<SIM::SPIDevice *>( mImpl );
 
     std::lock_guard<std::recursive_mutex> lk( driver->lock );
     return driver->virtualDriver->setPeripheralMode( mode );
@@ -156,8 +156,8 @@ namespace Chimera::SPI
 
   Chimera::Status_t Driver::setClockFrequency( const size_t freq, const size_t tolerance )
   {
-    RT_HARD_ASSERT( SIM::validateDriver( mDriver ) );
-    auto driver = reinterpret_cast<SIM::SPIDevice *>( mDriver );
+    RT_HARD_ASSERT( SIM::validateDriver( mImpl ) );
+    auto driver = reinterpret_cast<SIM::SPIDevice *>( mImpl );
 
     std::lock_guard<std::recursive_mutex> lk( driver->lock );
     return driver->virtualDriver->setClockFrequency( freq, tolerance );
@@ -166,113 +166,13 @@ namespace Chimera::SPI
 
   size_t Driver::getClockFrequency()
   {
-    RT_HARD_ASSERT( SIM::validateDriver( mDriver ) );
-    auto driver = reinterpret_cast<SIM::SPIDevice *>( mDriver );
+    RT_HARD_ASSERT( SIM::validateDriver( mImpl ) );
+    auto driver = reinterpret_cast<SIM::SPIDevice *>( mImpl );
 
     std::lock_guard<std::recursive_mutex> lk( driver->lock );
     return driver->virtualDriver->getClockFrequency();
   }
 
-
-  /*-------------------------------------------------
-  Interface: Listener
-  -------------------------------------------------*/
-  Chimera::Status_t Driver::registerListener( Chimera::Event::Actionable &listener, const size_t timeout,
-                                              size_t &registrationID )
-  {
-    RT_HARD_ASSERT( SIM::validateDriver( mDriver ) );
-    auto driver = reinterpret_cast<SIM::SPIDevice *>( mDriver );
-
-    std::lock_guard<std::recursive_mutex> lk( driver->lock );
-    return driver->virtualDriver->registerListener( listener, timeout, registrationID );
-  }
-
-
-  Chimera::Status_t Driver::removeListener( const size_t registrationID, const size_t timeout )
-  {
-    RT_HARD_ASSERT( SIM::validateDriver( mDriver ) );
-    auto driver = reinterpret_cast<SIM::SPIDevice *>( mDriver );
-
-    std::lock_guard<std::recursive_mutex> lk( driver->lock );
-    return driver->virtualDriver->removeListener( registrationID, timeout );
-  }
-
-
-  /*-------------------------------------------------
-  Interface: AsyncIO
-  -------------------------------------------------*/
-  Chimera::Status_t Driver::await( const Chimera::Event::Trigger event, const size_t timeout )
-  {
-    RT_HARD_ASSERT( SIM::validateDriver( mDriver ) );
-    auto driver = reinterpret_cast<SIM::SPIDevice *>( mDriver );
-
-    std::lock_guard<std::recursive_mutex> lk( driver->lock );
-    return driver->virtualDriver->await( event, timeout );
-  }
-
-
-  Chimera::Status_t Driver::await( const Chimera::Event::Trigger event, Chimera::Thread::BinarySemaphore &notifier,
-                                   const size_t timeout )
-  {
-    RT_HARD_ASSERT( SIM::validateDriver( mDriver ) );
-    auto driver = reinterpret_cast<SIM::SPIDevice *>( mDriver );
-
-    std::lock_guard<std::recursive_mutex> lk( driver->lock );
-    return driver->virtualDriver->await( event, notifier, timeout );
-  }
-
-
-  /*-------------------------------------------------
-  Interface: Lockable
-  -------------------------------------------------*/
-  void Driver::lock()
-  {
-    RT_HARD_ASSERT( SIM::validateDriver( mDriver ) );
-    auto driver = reinterpret_cast<SIM::SPIDevice *>( mDriver );
-
-    std::lock_guard<std::recursive_mutex> lk( driver->lock );
-    driver->virtualDriver->lock();
-  }
-
-
-  void Driver::lockFromISR()
-  {
-    RT_HARD_ASSERT( SIM::validateDriver( mDriver ) );
-    auto driver = reinterpret_cast<SIM::SPIDevice *>( mDriver );
-
-    std::lock_guard<std::recursive_mutex> lk( driver->lock );
-    driver->virtualDriver->lockFromISR();
-  }
-
-
-  bool Driver::try_lock_for( const size_t timeout )
-  {
-    RT_HARD_ASSERT( SIM::validateDriver( mDriver ) );
-    auto driver = reinterpret_cast<SIM::SPIDevice *>( mDriver );
-
-    std::lock_guard<std::recursive_mutex> lk( driver->lock );
-    return driver->virtualDriver->try_lock_for( timeout );
-  }
-
-
-  void Driver::unlock()
-  {
-    RT_HARD_ASSERT( SIM::validateDriver( mDriver ) );
-    auto driver = reinterpret_cast<SIM::SPIDevice *>( mDriver );
-
-    std::lock_guard<std::recursive_mutex> lk( driver->lock );
-    driver->virtualDriver->unlock();
-  }
-
-
-  void Driver::unlockFromISR()
-  {
-    RT_HARD_ASSERT( SIM::validateDriver( mDriver ) );
-    auto driver = reinterpret_cast<SIM::SPIDevice *>( mDriver );
-
-    std::lock_guard<std::recursive_mutex> lk( driver->lock );
-    driver->virtualDriver->unlockFromISR();
-  }
 
   /*-------------------------------------------------------------------------------
   Backend Driver Registry
@@ -441,16 +341,6 @@ namespace Chimera::SPI
       ON_CALL( *this, setClockFrequency ).WillByDefault( [ this ]( const size_t a, const size_t b ) {
         RT_HARD_ASSERT( mFake );
         return mFake->setClockFrequency( a, b );
-      } );
-
-      ON_CALL( *this, registerListener ).WillByDefault( [ this ]( Chimera::Event::Actionable &a, const size_t b, size_t &c ) {
-        RT_HARD_ASSERT( mFake );
-        return mFake->registerListener( a, b, c );
-      } );
-
-      ON_CALL( *this, removeListener ).WillByDefault( [ this ]( const size_t a, const size_t b ) {
-        RT_HARD_ASSERT( mFake );
-        return mFake->removeListener( a, b );
       } );
 
       ON_CALL( *this, await( _, _ ) ).WillByDefault( [ this ]( const Chimera::Event::Trigger a, const size_t b ) {

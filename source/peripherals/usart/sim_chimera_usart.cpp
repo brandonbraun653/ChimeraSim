@@ -19,7 +19,7 @@ namespace Chimera::USART
   /*-------------------------------------------------------------------------------
   Driver Implementation
   -------------------------------------------------------------------------------*/
-  Driver::Driver() : mChannel( Chimera::Serial::Channel::NOT_SUPPORTED )
+  Driver::Driver()
   {
   }
 
@@ -121,44 +121,6 @@ namespace Chimera::USART
   {
   }
 
-  /*-------------------------------------------------
-  Interface: AsyncIO
-  -------------------------------------------------*/
-  Chimera::Status_t Driver::await( const Chimera::Event::Trigger event, const size_t timeout )
-  {
-    return Chimera::Status::OK;
-  }
-
-
-  Chimera::Status_t Driver::await( const Chimera::Event::Trigger event, Chimera::Thread::BinarySemaphore &notifier,
-                                   const size_t timeout )
-  {
-    return Chimera::Status::OK;
-  }
-
-  /*-------------------------------------------------
-  Interface: Lockable
-  -------------------------------------------------*/
-  void Driver::lock()
-  {
-  }
-
-  void Driver::lockFromISR()
-  {
-  }
-
-  bool Driver::try_lock_for( const size_t timeout )
-  {
-    return false;
-  }
-
-  void Driver::unlock()
-  {
-  }
-
-  void Driver::unlockFromISR()
-  {
-  }
 
   namespace Backend
   {

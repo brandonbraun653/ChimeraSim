@@ -79,19 +79,6 @@ namespace Chimera::SPI::SIM
   }
 
 
-  Chimera::Status_t BasicSPI::registerListener( Chimera::Event::Actionable &listener, const size_t timeout,
-                                                size_t &registrationID )
-  {
-    return Chimera::Status::OK;
-  }
-
-
-  Chimera::Status_t BasicSPI::removeListener( const size_t registrationID, const size_t timeout )
-  {
-    return Chimera::Status::OK;
-  }
-
-
   Chimera::Status_t BasicSPI::await( const Chimera::Event::Trigger event, const size_t timeout )
   {
     return Chimera::Status::OK;
