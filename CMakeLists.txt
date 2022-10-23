@@ -18,6 +18,7 @@ gen_intf_lib_variants(
     chimera_sim_clock
     chimera_sim_exti
     chimera_sim_gpio
+    chimera_sim_i2c
     chimera_sim_interrupt
     chimera_sim_pwm
     chimera_sim_shared

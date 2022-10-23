@@ -1,0 +1,18 @@
+/********************************************************************************
+*  File Name:
+*    i2c
+*
+*  Description:
+*    ChimeraSim I2C Includes
+*
+*  2022 | Brandon Braun | brandonbraun653@gmail.com
+********************************************************************************/
+
+#pragma once
+#ifndef CHIMERA_SIM_I2C_INCLUDES
+#define CHIMERA_SIM_I2C_INCLUDES
+
+#include <ChimeraSim/source/peripherals/i2c/sim_i2c_types.hpp>
+#include <ChimeraSim/source/peripherals/i2c/sim_i2c_virtual.hpp>
+
+#endif  /* !CHIMERA_SIM_I2C_INCLUDES */
