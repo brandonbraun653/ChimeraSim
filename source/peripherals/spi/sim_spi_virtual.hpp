@@ -49,6 +49,7 @@ namespace Chimera::SPI::SIM
   public:
     MOCK_METHOD( Chimera::Status_t, init, ( const Chimera::SPI::DriverConfig & ), ( override ) );
     MOCK_METHOD( Chimera::Status_t, deInit, (), ( override ) );
+    MOCK_METHOD( Chimera::Status_t, assignChipSelect, ( const Chimera::GPIO::Driver_rPtr ), ( override ) );
     MOCK_METHOD( Chimera::Status_t, setChipSelect, ( const Chimera::GPIO::State ), ( override ) );
     MOCK_METHOD( Chimera::Status_t, setChipSelectControlMode, ( const Chimera::SPI::CSMode ), ( override ) );
     MOCK_METHOD( Chimera::Status_t, writeBytes, ( const void *const, const size_t ), ( override ) );
@@ -58,7 +59,7 @@ namespace Chimera::SPI::SIM
     MOCK_METHOD( Chimera::Status_t, setClockFrequency, ( const size_t, const size_t ), ( override ) );
     MOCK_METHOD( Chimera::Status_t, await, ( const Chimera::Event::Trigger, const size_t ), ( override ) );
     MOCK_METHOD( Chimera::Status_t, await, ( const Chimera::Event::Trigger, Chimera::Thread::BinarySemaphore &, const size_t ), ( override ) );
-    MOCK_METHOD( Chimera::SPI::DriverConfig, getInit, (), ( override ) );
+    MOCK_METHOD( Chimera::SPI::HardwareInit, getInit, (), ( override ) );
     MOCK_METHOD( size_t, getClockFrequency, (), ( override ) );
     MOCK_METHOD( void, lock, (), ( override ) );
     MOCK_METHOD( void, lockFromISR, (), ( override ) );
@@ -88,6 +89,7 @@ namespace Chimera::SPI::SIM
   public:
     virtual Chimera::Status_t init( const Chimera::SPI::DriverConfig &setupStruct ) override;
     virtual Chimera::Status_t deInit() override;
+    virtual Chimera::Status_t assignChipSelect( const Chimera::GPIO::Driver_rPtr cs ) override;
     virtual Chimera::Status_t setChipSelect( const Chimera::GPIO::State value ) override;
     virtual Chimera::Status_t setChipSelectControlMode( const Chimera::SPI::CSMode mode ) override;
     virtual Chimera::Status_t writeBytes( const void *const txBuffer, const size_t length ) override;
@@ -95,7 +97,7 @@ namespace Chimera::SPI::SIM
     virtual Chimera::Status_t readWriteBytes( const void *const txBuffer, void *const rxBuffer, const size_t length ) override;
     virtual Chimera::Status_t setPeripheralMode( const Chimera::Hardware::PeripheralMode mode ) override;
     virtual Chimera::Status_t setClockFrequency( const size_t freq, const size_t tolerance ) override;
-    virtual Chimera::SPI::DriverConfig getInit() override;
+    virtual Chimera::SPI::HardwareInit getInit() override;
     virtual size_t getClockFrequency() override;
     virtual Chimera::Status_t await( const Chimera::Event::Trigger event, const size_t timeout ) override;
     virtual Chimera::Status_t await( const Chimera::Event::Trigger event, Chimera::Thread::BinarySemaphore &notifier,

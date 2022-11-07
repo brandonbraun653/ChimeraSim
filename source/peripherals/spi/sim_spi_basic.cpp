@@ -34,6 +34,12 @@ namespace Chimera::SPI::SIM
   }
 
 
+  Chimera::Status_t BasicSPI::assignChipSelect( const Chimera::GPIO::Driver_rPtr cs )
+  {
+    return Chimera::Status::OK;
+  }
+
+
   Chimera::Status_t BasicSPI::setChipSelect( const Chimera::GPIO::State value )
   {
     return Chimera::Status::OK;
@@ -92,9 +98,9 @@ namespace Chimera::SPI::SIM
   }
 
 
-  Chimera::SPI::DriverConfig BasicSPI::getInit()
+  Chimera::SPI::HardwareInit BasicSPI::getInit()
   {
-    return mHWState.config;
+    return mHWState.config.HWInit;
   }
 
 

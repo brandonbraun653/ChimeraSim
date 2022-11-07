@@ -74,7 +74,7 @@ namespace Chimera::SPI
   }
 
 
-  Chimera::SPI::DriverConfig Driver::getInit()
+  Chimera::SPI::HardwareInit Driver::getInit()
   {
     RT_HARD_ASSERT( SIM::validateDriver( mImpl ) );
     auto driver = reinterpret_cast<SIM::SPIDevice *>( mImpl );
@@ -91,6 +91,16 @@ namespace Chimera::SPI
 
     std::lock_guard<std::recursive_mutex> lk( driver->lock );
     return driver->virtualDriver->deInit();
+  }
+
+
+  Chimera::Status_t Driver::assignChipSelect( const Chimera::GPIO::Driver_rPtr cs )
+  {
+    RT_HARD_ASSERT( SIM::validateDriver( mImpl ) );
+    auto driver = reinterpret_cast<SIM::SPIDevice *>( mImpl );
+
+    std::lock_guard<std::recursive_mutex> lk( driver->lock );
+    return driver->virtualDriver->assignChipSelect( cs );
   }
 
 
