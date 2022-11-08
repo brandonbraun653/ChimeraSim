@@ -5,17 +5,25 @@
  *  Description:
  *    USART Simulator Driver
  *
- *  2020-2021 | Brandon Braun | brandonbraun653@gmail.com
+ *  2020-2022 | Brandon Braun | brandonbraun653@gmail.com
  *******************************************************************************/
 
 #if defined( CHIMERA_SIMULATOR )
 
-/* Chimera Includes */
+/*-----------------------------------------------------------------------------
+Includes
+-----------------------------------------------------------------------------*/
 #include <Chimera/common>
+#include <Chimera/peripheral>
 #include <Chimera/usart>
 
 namespace Chimera::USART
 {
+  /*---------------------------------------------------------------------------
+  Static Data
+  ---------------------------------------------------------------------------*/
+  static DeviceManager<Driver, Chimera::Serial::Channel, EnumValue( Chimera::Serial::Channel::NUM_OPTIONS )> s_raw_driver;
+
   /*-------------------------------------------------------------------------------
   Driver Implementation
   -------------------------------------------------------------------------------*/
@@ -32,6 +40,7 @@ namespace Chimera::USART
   -------------------------------------------------*/
   Chimera::Status_t Driver::assignHW( const Chimera::Serial::Channel channel, const Chimera::Serial::IOPins &pins )
   {
+    this->initAIO();
     return Chimera::Status::OK;
   }
 
@@ -70,12 +79,14 @@ namespace Chimera::USART
 
   Chimera::Status_t Driver::write( const void *const buffer, const size_t length )
   {
+    signalAIO( Chimera::Event::Trigger::TRIGGER_WRITE_COMPLETE );
     return Chimera::Status::OK;
   }
 
 
   Chimera::Status_t Driver::read( void *const buffer, const size_t length )
   {
+    signalAIO( Chimera::Event::Trigger::TRIGGER_READ_COMPLETE );
     return Chimera::Status::OK;
   }
 
@@ -99,7 +110,7 @@ namespace Chimera::USART
 
 
   Chimera::Status_t Driver::enableBuffering( const Chimera::Hardware::SubPeripheral periph,
-                                             Chimera::Serial::CircularBuffer & userBuffer, uint8_t *const hwBuffer,
+                                             Chimera::Serial::CircularBuffer &userBuffer, uint8_t *const hwBuffer,
                                              const size_t hwBufferSize )
   {
     return Chimera::Status::OK;
@@ -138,17 +149,13 @@ namespace Chimera::USART
 
     bool isChannelUSART( const Chimera::Serial::Channel channel )
     {
-      /*-------------------------------------------------
-      By default select true. Until we have a mapping for
-      USART/UART channels, either driver works fine.
-      -------------------------------------------------*/
       return true;
     }
 
 
     Driver_rPtr getDriver( const Chimera::Serial::Channel channel )
     {
-      return nullptr;
+      return s_raw_driver.getOrCreate( channel );
     }
 
     Chimera::Status_t registerDriver( struct Chimera::USART::Backend::DriverConfig &cfg )
@@ -163,9 +170,6 @@ namespace Chimera::USART
     }
   }    // namespace Backend
 
-  namespace SIM
-  {
-  }
 }    // namespace Chimera::USART
 
-#endif  /* CHIMERA_SIMULATOR */
+#endif /* CHIMERA_SIMULATOR */

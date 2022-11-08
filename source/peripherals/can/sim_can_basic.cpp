@@ -1,23 +1,23 @@
-/******************************************************************************
+/********************************************************************************
  *  File Name:
- *    sim_i2c_driver.cpp
+ *    sim_chimera_can.cpp
  *
  *  Description:
- *    I2C Simulator
+ *    CAN Simulator
  *
- *  2022 | Brandon Braun | brandonbraun653@protonmail.com
- *****************************************************************************/
+ *  2020-2022 | Brandon Braun | brandonbraun653@gmail.com
+ *******************************************************************************/
+
+#if defined( CHIMERA_SIMULATOR )
 
 /*-----------------------------------------------------------------------------
 Includes
 -----------------------------------------------------------------------------*/
-#include <Chimera/i2c>
-#include <Chimera/assert>
+#include <Chimera/common>
+#include <Chimera/can>
 #include <Chimera/peripheral>
-#include <ChimeraSim/i2c>
-#include <ChimeraSim/source/shared/common_types.hpp>
 
-namespace Chimera::I2C
+namespace Chimera::CAN
 {
   /*---------------------------------------------------------------------------
   Static Data
@@ -39,23 +39,22 @@ namespace Chimera::I2C
   }
 
 
-  static Driver_rPtr impl_getDriver( const Chimera::I2C::Channel channel )
+  static Driver_rPtr impl_getDriver( const Chimera::CAN::Channel channel )
   {
     return s_raw_driver.getOrCreate( channel );
   }
 
   namespace Backend
   {
-    Chimera::Status_t registerDriver( Chimera::I2C::Backend::DriverConfig &registry )
+    Chimera::Status_t registerDriver( Chimera::CAN::Backend::DriverConfig &registry )
     {
       registry.isSupported = true;
-      registry.getDriver   = ::Chimera::I2C::impl_getDriver;
-      registry.initialize  = ::Chimera::I2C::impl_initialize;
-      registry.reset       = ::Chimera::I2C::impl_reset;
+      registry.getDriver   = ::Chimera::CAN::impl_getDriver;
+      registry.initialize  = ::Chimera::CAN::impl_initialize;
+      registry.reset       = ::Chimera::CAN::impl_reset;
       return Chimera::Status::OK;
     }
   }    // namespace Backend
-
 
   /*---------------------------------------------------------------------------
   Driver Implementation
@@ -82,34 +81,41 @@ namespace Chimera::I2C
   }
 
 
-  Chimera::Status_t Driver::read( const uint16_t address, void *const data, const size_t length )
+  CANStatus Driver::getStatus()
+  {
+    return {};
+  }
+
+
+  Chimera::Status_t Driver::send( const BasicFrame &frame )
   {
     return Chimera::Status::OK;
   }
 
 
-  Chimera::Status_t Driver::write( const uint16_t address, const void *const data, const size_t length )
+  Chimera::Status_t Driver::receive( BasicFrame &frame )
   {
     return Chimera::Status::OK;
   }
 
 
-  Chimera::Status_t Driver::transfer( const uint16_t address, const void *const tx_data, void *const rx_data,
-                                      const size_t length )
+  Chimera::Status_t Driver::filter( const Filter *const list, const size_t size )
   {
     return Chimera::Status::OK;
   }
 
 
-  Chimera::Status_t Driver::stop()
+  Chimera::Status_t Driver::flush( BufferType buffer )
   {
     return Chimera::Status::OK;
   }
 
 
-  Chimera::Status_t Driver::start()
+  size_t Driver::available()
   {
-    return Chimera::Status::OK;
+    return 0;
   }
 
-}    // namespace Chimera::I2C
+}    // namespace Chimera::CAN
+
+#endif /* CHIMERA_SIMULATOR */

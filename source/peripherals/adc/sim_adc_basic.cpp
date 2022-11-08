@@ -5,20 +5,69 @@
  *  Description:
  *    adc Simulator
  *
- *  2020-2021 | Brandon Braun | brandonbraun653@gmail.com
+ *  2020-2022 | Brandon Braun | brandonbraun653@gmail.com
  *******************************************************************************/
 
 #if defined( CHIMERA_SIMULATOR )
 
-/* Chimera Includes */
+/*-----------------------------------------------------------------------------
+Includes
+-----------------------------------------------------------------------------*/
 #include <Chimera/common>
 #include <Chimera/adc>
+#include <Chimera/peripheral>
 
 namespace Chimera::ADC
 {
-  /*-------------------------------------------------------------------------------
+  /*---------------------------------------------------------------------------
+  Static Data
+  ---------------------------------------------------------------------------*/
+  static DeviceManager<Driver, Peripheral, EnumValue( Peripheral::NUM_OPTIONS )> s_raw_driver;
+
+  /*---------------------------------------------------------------------------
+  Static Functions
+  ---------------------------------------------------------------------------*/
+  static Chimera::Status_t impl_initialize()
+  {
+    return Chimera::Status::OK;
+  }
+
+
+  static Chimera::Status_t impl_reset()
+  {
+    return Chimera::Status::OK;
+  }
+
+
+  static Driver_rPtr impl_getDriver( const Chimera::ADC::Peripheral periph )
+  {
+    return s_raw_driver.getOrCreate( periph );
+  }
+
+
+  static bool impl_featureSupported( const Chimera::ADC::Peripheral periph, const Chimera::ADC::Feature feature )
+  {
+    return true;
+  }
+
+
+  namespace Backend
+  {
+    Chimera::Status_t registerDriver( Chimera::ADC::Backend::DriverConfig &registry )
+    {
+      registry.isSupported      = true;
+      registry.getDriver        = ::Chimera::ADC::impl_getDriver;
+      registry.initialize       = ::Chimera::ADC::impl_initialize;
+      registry.reset            = ::Chimera::ADC::impl_reset;
+      registry.featureSupported = ::Chimera::ADC::impl_featureSupported;
+      return Chimera::Status::OK;
+    }
+  }    // namespace Backend
+
+
+  /*---------------------------------------------------------------------------
   Driver Implementation
-  -------------------------------------------------------------------------------*/
+  ---------------------------------------------------------------------------*/
   Driver::Driver()
   {
   }
@@ -65,6 +114,18 @@ namespace Chimera::ADC
 
   void Driver::stopSequence()
   {
+  }
+
+
+  bool Driver::nextSeqSample( const Channel ch, Sample &sample )
+  {
+    return true;
+  }
+
+
+  size_t Driver::multiSeqSample( const Channel *ch_arr, Sample *sample_arr, const size_t size )
+  {
+    return 0;
   }
 
 
