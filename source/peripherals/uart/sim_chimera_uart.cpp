@@ -16,6 +16,8 @@ Includes
 #include <Chimera/common>
 #include <Chimera/peripheral>
 #include <Chimera/uart>
+#include <iostream>
+#include <string>
 
 namespace Chimera::UART
 {
@@ -78,12 +80,17 @@ namespace Chimera::UART
 
   Chimera::Status_t Driver::write( const void *const buffer, const size_t length )
   {
+    std::string raw_data( reinterpret_cast<const char *>( buffer ), length );
+
+    std::cout << raw_data << std::flush;
+    signalAIO( Chimera::Event::Trigger::TRIGGER_WRITE_COMPLETE );
     return Chimera::Status::OK;
   }
 
 
   Chimera::Status_t Driver::read( void *const buffer, const size_t length )
   {
+    signalAIO( Chimera::Event::Trigger::TRIGGER_READ_COMPLETE );
     return Chimera::Status::OK;
   }
 
