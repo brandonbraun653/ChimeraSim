@@ -23,6 +23,7 @@ namespace Chimera::SPI::SIM
   -------------------------------------------------------------------------------*/
   Chimera::Status_t BasicSPI::init( const Chimera::SPI::DriverConfig &setupStruct )
   {
+    this->initAIO();
     mHWState.config = setupStruct;
     return Chimera::Status::OK;
   }
@@ -55,18 +56,19 @@ namespace Chimera::SPI::SIM
 
   Chimera::Status_t BasicSPI::writeBytes( const void *const txBuffer, const size_t length )
   {
-    return Chimera::Status::OK;
+    return readWriteBytes( txBuffer, nullptr, length );
   }
 
 
   Chimera::Status_t BasicSPI::readBytes( void *const rxBuffer, const size_t length )
   {
-    return Chimera::Status::OK;
+    return readWriteBytes( nullptr, rxBuffer, length );
   }
 
 
   Chimera::Status_t BasicSPI::readWriteBytes( const void *const txBuffer, void *const rxBuffer, const size_t length )
   {
+    this->signalAIO( Chimera::Event::Trigger::TRIGGER_TRANSFER_COMPLETE );
     return Chimera::Status::OK;
   }
 
@@ -85,19 +87,6 @@ namespace Chimera::SPI::SIM
   }
 
 
-  Chimera::Status_t BasicSPI::await( const Chimera::Event::Trigger event, const size_t timeout )
-  {
-    return Chimera::Status::OK;
-  }
-
-
-  Chimera::Status_t BasicSPI::await( const Chimera::Event::Trigger event, Chimera::Thread::BinarySemaphore &notifier,
-                                     const size_t timeout )
-  {
-    return Chimera::Status::OK;
-  }
-
-
   Chimera::SPI::HardwareInit BasicSPI::getInit()
   {
     return mHWState.config.HWInit;
@@ -107,32 +96,6 @@ namespace Chimera::SPI::SIM
   size_t BasicSPI::getClockFrequency()
   {
     return mHWState.clockFrequency;
-  }
-
-
-  void BasicSPI::lock()
-  {
-    mHWState.mtx.lock();
-  }
-
-  void BasicSPI::lockFromISR()
-  {
-    mHWState.mtx.lock();
-  }
-
-  bool BasicSPI::try_lock_for( const size_t timeout )
-  {
-    return mHWState.mtx.try_lock_for( std::chrono::milliseconds( timeout ) );
-  }
-
-  void BasicSPI::unlock()
-  {
-    mHWState.mtx.unlock();
-  }
-
-  void BasicSPI::unlockFromISR()
-  {
-    mHWState.mtx.unlock();
   }
 
 }    // namespace Chimera::SPI::SIM

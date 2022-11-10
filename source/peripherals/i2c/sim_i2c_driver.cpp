@@ -72,6 +72,11 @@ namespace Chimera::I2C
 
   Chimera::Status_t Driver::open( const DriverConfig &cfg )
   {
+    /*-------------------------------------------------------------------------
+    Ensure the AsyncIO driver is ready
+    -------------------------------------------------------------------------*/
+    this->initAIO();
+
     return Chimera::Status::OK;
   }
 
@@ -84,19 +89,20 @@ namespace Chimera::I2C
 
   Chimera::Status_t Driver::read( const uint16_t address, void *const data, const size_t length )
   {
-    return Chimera::Status::OK;
+    return transfer( address, nullptr, data, length );
   }
 
 
   Chimera::Status_t Driver::write( const uint16_t address, const void *const data, const size_t length )
   {
-    return Chimera::Status::OK;
+    return transfer( address, data, nullptr, length );
   }
 
 
   Chimera::Status_t Driver::transfer( const uint16_t address, const void *const tx_data, void *const rx_data,
                                       const size_t length )
   {
+    this->signalAIO( Chimera::Event::Trigger::TRIGGER_TRANSFER_COMPLETE );
     return Chimera::Status::OK;
   }
 

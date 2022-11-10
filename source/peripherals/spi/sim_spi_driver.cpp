@@ -5,22 +5,20 @@
  *  Description:
  *    SPI Simulator
  *
- *  2020-2021 | Brandon Braun | brandonbraun653@gmail.com
+ *  2020-2022 | Brandon Braun | brandonbraun653@gmail.com
  *******************************************************************************/
 
 #if defined( CHIMERA_SIMULATOR )
 
-/* STL Includes */
-#include <mutex>
-
-/* Chimera Includes */
+/*-----------------------------------------------------------------------------
+Includes
+-----------------------------------------------------------------------------*/
 #include <Chimera/assert>
 #include <Chimera/common>
 #include <Chimera/spi>
-
-/* Simulator Includes */
-#include <ChimeraSim/spi>
 #include <ChimeraSim/source/shared/common_types.hpp>
+#include <ChimeraSim/spi>
+#include <mutex>
 
 namespace Chimera::SPI
 {
@@ -65,6 +63,11 @@ namespace Chimera::SPI
     -------------------------------------------------*/
     std::lock_guard<std::recursive_mutex> lk( s_devices[ idx ].lock );
     s_devices[ idx ].resourceIndex = idx;
+
+    /*-------------------------------------------------------------------------
+    Ensure this driver's instance of AsyncIO is initialized
+    -------------------------------------------------------------------------*/
+    this->initAIO();
 
     /*-------------------------------------------------
     Validate and invoke the fake/mock
@@ -130,7 +133,9 @@ namespace Chimera::SPI
     auto driver = reinterpret_cast<SIM::SPIDevice *>( mImpl );
 
     std::lock_guard<std::recursive_mutex> lk( driver->lock );
-    return driver->virtualDriver->writeBytes( txBuffer, length );
+    auto result = driver->virtualDriver->writeBytes( txBuffer, length );
+    this->signalAIO( Chimera::Event::Trigger::TRIGGER_TRANSFER_COMPLETE );
+    return result;
   }
 
 
@@ -140,7 +145,9 @@ namespace Chimera::SPI
     auto driver = reinterpret_cast<SIM::SPIDevice *>( mImpl );
 
     std::lock_guard<std::recursive_mutex> lk( driver->lock );
-    return driver->virtualDriver->readBytes( rxBuffer, length );
+    auto result =  driver->virtualDriver->readBytes( rxBuffer, length );
+    this->signalAIO( Chimera::Event::Trigger::TRIGGER_TRANSFER_COMPLETE );
+    return result;
   }
 
 
@@ -150,7 +157,9 @@ namespace Chimera::SPI
     auto driver = reinterpret_cast<SIM::SPIDevice *>( mImpl );
 
     std::lock_guard<std::recursive_mutex> lk( driver->lock );
-    return driver->virtualDriver->readWriteBytes( txBuffer, rxBuffer, length );
+    auto result = driver->virtualDriver->readWriteBytes( txBuffer, rxBuffer, length );
+    this->signalAIO( Chimera::Event::Trigger::TRIGGER_TRANSFER_COMPLETE );
+    return result;
   }
 
 

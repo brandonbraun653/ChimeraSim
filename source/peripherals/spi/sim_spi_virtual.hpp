@@ -12,20 +12,16 @@
 #ifndef CHIMERA_SIM_SPI_MOCK_HPP
 #define CHIMERA_SIM_SPI_MOCK_HPP
 
-/* STL Includes */
-#include <mutex>
-
-/* Chimera Includes */
+/*-----------------------------------------------------------------------------
+Includes
+-----------------------------------------------------------------------------*/
 #include <Chimera/assert>
 #include <Chimera/spi>
-
-/* Google Includes */
-#include <gmock/gmock.h>
-
-/* Simulator Includes */
 #include <ChimeraSim/source/controller/ctrl_types.hpp>
 #include <ChimeraSim/source/peripherals/spi/sim_spi_types.hpp>
 #include <ChimeraSim/source/transport/master_slave.hpp>
+#include <gmock/gmock.h>
+#include <mutex>
 
 namespace Chimera::SPI::SIM
 {
@@ -58,7 +54,9 @@ namespace Chimera::SPI::SIM
     MOCK_METHOD( Chimera::Status_t, setPeripheralMode, ( const Chimera::Hardware::PeripheralMode ), ( override ) );
     MOCK_METHOD( Chimera::Status_t, setClockFrequency, ( const size_t, const size_t ), ( override ) );
     MOCK_METHOD( Chimera::Status_t, await, ( const Chimera::Event::Trigger, const size_t ), ( override ) );
-    MOCK_METHOD( Chimera::Status_t, await, ( const Chimera::Event::Trigger, Chimera::Thread::BinarySemaphore &, const size_t ), ( override ) );
+    MOCK_METHOD( Chimera::Status_t, await, ( const Chimera::Event::Trigger, Chimera::Thread::BinarySemaphore &, const size_t ),
+                 ( override ) );
+    MOCK_METHOD( void, signalAIO, ( const Chimera::Event::Trigger ), ( override ) );
     MOCK_METHOD( Chimera::SPI::HardwareInit, getInit, (), ( override ) );
     MOCK_METHOD( size_t, getClockFrequency, (), ( override ) );
     MOCK_METHOD( void, lock, (), ( override ) );
@@ -84,9 +82,11 @@ namespace Chimera::SPI::SIM
   /*-------------------------------------------------------------------------------
   Default delegate that mimics a working driver with no fancy add-ons
   -------------------------------------------------------------------------------*/
-  class BasicSPI : public ISPI
+  class BasicSPI : public Chimera::Thread::AsyncIO<BasicSPI>, public Chimera::Thread::Lockable<BasicSPI>, public virtual ISPI
   {
   public:
+    using Chimera::Thread::AsyncIO<BasicSPI>::AsyncIO;
+
     virtual Chimera::Status_t init( const Chimera::SPI::DriverConfig &setupStruct ) override;
     virtual Chimera::Status_t deInit() override;
     virtual Chimera::Status_t assignChipSelect( const Chimera::GPIO::Driver_rPtr cs ) override;
@@ -99,16 +99,11 @@ namespace Chimera::SPI::SIM
     virtual Chimera::Status_t setClockFrequency( const size_t freq, const size_t tolerance ) override;
     virtual Chimera::SPI::HardwareInit getInit() override;
     virtual size_t getClockFrequency() override;
-    virtual Chimera::Status_t await( const Chimera::Event::Trigger event, const size_t timeout ) override;
-    virtual Chimera::Status_t await( const Chimera::Event::Trigger event, Chimera::Thread::BinarySemaphore &notifier,
-                             const size_t timeout ) override;
-    virtual void lock() override;
-    virtual void lockFromISR() override;
-    virtual bool try_lock_for( const size_t timeout ) override;
-    virtual void unlock() override;
-    virtual void unlockFromISR() override;
 
   protected:
+    friend Chimera::Thread::Lockable<BasicSPI>;
+    friend Chimera::Thread::AsyncIO<BasicSPI>;
+
     VirtualState mHWState;
   };
 
@@ -121,6 +116,6 @@ namespace Chimera::SPI::SIM
     Chimera::Status_t init( const Chimera::SPI::DriverConfig &setupStruct ) final override;
     Chimera::Status_t readWriteBytes( const void *const txBuffer, void *const rxBuffer, const size_t length ) final override;
   };
-}  // namespace Chimera::SPI::SIM
+}    // namespace Chimera::SPI::SIM
 
-#endif  /* !CHIMERA_SIM_SPI_MOCK_HPP */
+#endif /* !CHIMERA_SIM_SPI_MOCK_HPP */
