@@ -25,9 +25,9 @@ Includes
 
 namespace Chimera::SPI::SIM
 {
-  /*-------------------------------------------------------------------------------
+  /*---------------------------------------------------------------------------
   Public Functions
-  -------------------------------------------------------------------------------*/
+  ---------------------------------------------------------------------------*/
   /**
    *  Sets the backend driver style in use for the given peripheral index
    *
@@ -37,9 +37,9 @@ namespace Chimera::SPI::SIM
    */
   Chimera::Status_t setDriverType( const Chimera::SIM::Driver_t type, const size_t idx );
 
-  /*-------------------------------------------------------------------------------
+  /*---------------------------------------------------------------------------
   Core object used to virtualize the driver for sim and test environments
-  -------------------------------------------------------------------------------*/
+  ---------------------------------------------------------------------------*/
   class MockSPI : public ISPI
   {
   public:
@@ -79,9 +79,9 @@ namespace Chimera::SPI::SIM
     ISPI *mFake;
   };
 
-  /*-------------------------------------------------------------------------------
+  /*---------------------------------------------------------------------------
   Default delegate that mimics a working driver with no fancy add-ons
-  -------------------------------------------------------------------------------*/
+  ---------------------------------------------------------------------------*/
   class BasicSPI : public Chimera::Thread::AsyncIO<BasicSPI>, public Chimera::Thread::Lockable<BasicSPI>, public virtual ISPI
   {
   public:
@@ -107,9 +107,9 @@ namespace Chimera::SPI::SIM
     VirtualState mHWState;
   };
 
-  /*-------------------------------------------------------------------------------
+  /*---------------------------------------------------------------------------
   Delegate that exposes a network connection to for communication
-  -------------------------------------------------------------------------------*/
+  ---------------------------------------------------------------------------*/
   class NetworkedSPI : public BasicSPI, public Chimera::SIM::Transport::SynchMasterSlave
   {
   public:
