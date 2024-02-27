@@ -5,18 +5,18 @@
  *  Description:
  *    Simulates Chimera system functionality
  *
- *  2019 | Brandon Braun | brandonbraun653@gmail.com
+ *  2019-2024 | Brandon Braun | brandonbraun653@gmail.com
  ********************************************************************************/
 
 #if defined( CHIMERA_SIMULATOR )
 
-/* STL Includes */
+/*-----------------------------------------------------------------------------
+Includes
+-----------------------------------------------------------------------------*/
 #include <atomic>
 #include <cstdint>
 #include <chrono>
 #include <thread>
-
-/* Chimera Includes */
 #include <Chimera/common>
 #include <Chimera/system>
 
@@ -45,7 +45,7 @@ namespace Chimera::System
     return {};
   }
 
-  void prjEnableInterrupts( InterruptMask &interruptMask )
+  void prjEnableInterrupts( const InterruptMask &interruptMask )
   {
     //
   }

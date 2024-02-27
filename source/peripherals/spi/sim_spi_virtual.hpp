@@ -57,6 +57,7 @@ namespace Chimera::SPI::SIM
     MOCK_METHOD( Chimera::Status_t, await, ( const Chimera::Event::Trigger, Chimera::Thread::BinarySemaphore &, const size_t ),
                  ( override ) );
     MOCK_METHOD( void, signalAIO, ( const Chimera::Event::Trigger ), ( override ) );
+    MOCK_METHOD( void, signalAIOFromISR, ( const Chimera::Event::Trigger ), ( override ) );
     MOCK_METHOD( Chimera::SPI::HardwareInit, getInit, (), ( override ) );
     MOCK_METHOD( size_t, getClockFrequency, (), ( override ) );
     MOCK_METHOD( void, lock, (), ( override ) );

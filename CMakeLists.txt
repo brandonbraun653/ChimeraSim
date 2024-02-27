@@ -25,6 +25,8 @@ gen_intf_lib_variants(
     chimera_sim_i2c
     chimera_sim_interrupt
     chimera_sim_pwm
+    chimera_sim_sdio
+    chimera_sim_serial
     chimera_sim_shared
     chimera_sim_spi
     chimera_sim_system

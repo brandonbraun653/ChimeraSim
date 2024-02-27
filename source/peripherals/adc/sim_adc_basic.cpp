@@ -13,6 +13,7 @@
 /*-----------------------------------------------------------------------------
 Includes
 -----------------------------------------------------------------------------*/
+#include <Aurora/utility>
 #include <Chimera/common>
 #include <Chimera/adc>
 #include <Chimera/peripheral>
@@ -95,6 +96,18 @@ namespace Chimera::ADC
   }
 
 
+  size_t Driver::getSampleCycle( const Chimera::ADC::Channel ch )
+  {
+    return 0;
+  }
+
+
+  size_t Driver::totalMeasureTime( const size_t cycles )
+  {
+    return 0;
+  }
+
+
   Chimera::ADC::Sample Driver::sampleChannel( const Chimera::ADC::Channel ch )
   {
     return {};
@@ -133,7 +146,20 @@ namespace Chimera::ADC
   {
   }
 
+
   float Driver::toVoltage( const Chimera::ADC::Sample &sample )
+  {
+    return 0.0f;
+  }
+
+
+  Chimera::Status_t Driver::monitorChannel( const WatchdogConfig &cfg )
+  {
+    return Chimera::Status::OK;
+  }
+
+
+  float Driver::analogReference() const
   {
     return 0.0f;
   }

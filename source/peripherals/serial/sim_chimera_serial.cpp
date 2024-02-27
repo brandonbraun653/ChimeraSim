@@ -1,11 +1,11 @@
 /********************************************************************************
  *  File Name:
- *    sim_chimera_uart.cpp
+ *    sim_chimera_serial.cpp
  *
  *  Description:
- *    UART Simulator Driver
+ *    Serial Simulator Driver
  *
- *  2020-2024 | Brandon Braun | brandonbraun653@gmail.com
+ *  2024 | Brandon Braun | brandonbraun653@gmail.com
  *******************************************************************************/
 
 #if defined( CHIMERA_SIMULATOR )
@@ -16,11 +16,11 @@ Includes
 #include <Aurora/utility>
 #include <Chimera/common>
 #include <Chimera/peripheral>
-#include <Chimera/uart>
+#include <Chimera/serial>
 #include <iostream>
 #include <string>
 
-namespace Chimera::UART
+namespace Chimera::Serial
 {
   /*---------------------------------------------------------------------------
   Static Data
@@ -68,6 +68,7 @@ namespace Chimera::UART
     return length;
   }
 
+
   namespace Backend
   {
     Chimera::Status_t initialize()
@@ -93,12 +94,12 @@ namespace Chimera::UART
       return s_raw_driver.getOrCreate( channel );
     }
 
-    Chimera::Status_t registerDriver( struct Chimera::UART::Backend::DriverConfig &cfg )
+
+    Chimera::Status_t registerDriver( struct Chimera::Serial::Backend::DriverConfig &cfg )
     {
       cfg.isSupported   = true;
       cfg.getDriver     = getDriver;
       cfg.initialize    = initialize;
-      cfg.isChannelUART = isChannelUART;
       cfg.reset         = reset;
 
       return Chimera::Status::OK;

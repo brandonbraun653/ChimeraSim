@@ -15,6 +15,44 @@ Includes
 
 namespace Chimera::Timer::Trigger
 {
+  /*---------------------------------------------------------------------------
+  ITimerTrigger Interface
+  ---------------------------------------------------------------------------*/
+  ITimerTrigger::ITimerTrigger() : mTimerImpl( nullptr )
+  {
+  }
+
+
+  ITimerTrigger::~ITimerTrigger()
+  {
+  }
+
+
+  Chimera::Status_t ITimerTrigger::enable()
+  {
+    return Chimera::Status::OK;
+  }
+
+
+  Chimera::Status_t ITimerTrigger::disable()
+  {
+    return Chimera::Status::OK;
+  }
+
+
+  void ITimerTrigger::detachISR()
+  {
+  }
+
+
+  void ITimerTrigger::ackISR()
+  {
+  }
+
+
+  /*---------------------------------------------------------------------------
+  Master Implementation
+  ---------------------------------------------------------------------------*/
   Master::Master()
   {
   }
@@ -35,4 +73,39 @@ namespace Chimera::Timer::Trigger
     return Chimera::Status::OK;
   }
 
+
+  /*---------------------------------------------------------------------------
+  Slave Implementation
+  ---------------------------------------------------------------------------*/
+  Slave::Slave()
+  {
+  }
+
+
+  Slave::~Slave()
+  {
+  }
+
+
+  Chimera::Status_t Slave::init( const SlaveConfig &cfg )
+  {
+    return Chimera::Status::OK;
+  }
+
+
+  uint32_t Slave::getTickPeriod() const
+  {
+    return 0;
+  }
+
+
+  void Slave::setEventOffset( const uint32_t tickOffset )
+  {
+  }
+
+
+  Chimera::Status_t Slave::attachISR( Chimera::Function::Opaque func )
+  {
+    return Chimera::Status::OK;
+  }
 }    // namespace Chimera::Timer::Trigger

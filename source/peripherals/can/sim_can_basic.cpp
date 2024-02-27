@@ -5,7 +5,7 @@
  *  Description:
  *    CAN Simulator
  *
- *  2020-2022 | Brandon Braun | brandonbraun653@gmail.com
+ *  2020-2024 | Brandon Braun | brandonbraun653@gmail.com
  *******************************************************************************/
 
 #if defined( CHIMERA_SIMULATOR )
@@ -13,6 +13,7 @@
 /*-----------------------------------------------------------------------------
 Includes
 -----------------------------------------------------------------------------*/
+#include <Aurora/utility>
 #include <Chimera/common>
 #include <Chimera/can>
 #include <Chimera/peripheral>
