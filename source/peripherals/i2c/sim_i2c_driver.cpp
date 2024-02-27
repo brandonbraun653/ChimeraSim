@@ -12,6 +12,7 @@
 Includes
 -----------------------------------------------------------------------------*/
 #include <Aurora/logging>
+#include <Aurora/utility>
 #include <Chimera/assert>
 #include <Chimera/i2c>
 #include <Chimera/peripheral>

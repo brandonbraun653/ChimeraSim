@@ -5,7 +5,7 @@
  *  Description:
  *    ChimeraSim Stubs
  *
- *  2022 | Brandon Braun | brandonbraun653@protonmail.com
+ *  2022-2024 | Brandon Braun | brandonbraun653@protonmail.com
  *****************************************************************************/
 
 /*-----------------------------------------------------------------------------
@@ -49,15 +49,21 @@ namespace Chimera::Timer::Inverter
   }
 
 
-  Chimera::Status_t Driver::setPhaseDutyCycle( const float a, const float b, const float c )
+  Chimera::Status_t Driver::energizeWinding( const SwitchIO hiSide, const SwitchIO loSide, const float dutyCycle )
   {
     return Chimera::Status::OK;
   }
 
 
-  Chimera::Status_t Driver::setForwardCommState( const uint8_t phase )
+  Chimera::Status_t Driver::svmUpdate( const float alpha, const float beta, const float theta, const float drive )
   {
     return Chimera::Status::OK;
+  }
+
+
+  SVMState Driver::svmState()
+  {
+    return SVMState();
   }
 
 
