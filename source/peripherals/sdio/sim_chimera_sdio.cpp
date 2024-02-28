@@ -8,14 +8,22 @@
  *  2024 | Brandon Braun | brandonbraun653@protonmail.com
  *****************************************************************************/
 
+#if defined( CHIMERA_SIMULATOR )
+
 /*-----------------------------------------------------------------------------
 Includes
 -----------------------------------------------------------------------------*/
+#include <Aurora/utility>
 #include <Chimera/sdio>
-
+#include <Chimera/peripheral>
 
 namespace Chimera::SDIO
 {
+  /*---------------------------------------------------------------------------
+  Static Data
+  ---------------------------------------------------------------------------*/
+  static DeviceManager<Driver, Chimera::SDIO::Channel, EnumValue( Chimera::SDIO::Channel::NUM_OPTIONS )> s_raw_driver;
+
   /*---------------------------------------------------------------------------
   Driver Implementation
   ---------------------------------------------------------------------------*/
@@ -93,4 +101,37 @@ namespace Chimera::SDIO
     return Chimera::Status::OK;
   }
 
+
+  namespace Backend
+  {
+    Chimera::Status_t initialize()
+    {
+      return Chimera::Status::OK;
+    }
+
+
+    Chimera::Status_t reset()
+    {
+      return Chimera::Status::OK;
+    }
+
+
+    Driver_rPtr getDriver( const Chimera::SDIO::Channel channel )
+    {
+      return s_raw_driver.getOrCreate( channel );
+    }
+
+
+    Chimera::Status_t registerDriver( Chimera::SDIO::Backend::DriverConfig &registry )
+    {
+      registry.isSupported = true;
+      registry.getDriver   = ::Chimera::SDIO::Backend::getDriver;
+      registry.initialize  = ::Chimera::SDIO::Backend::initialize;
+      registry.reset       = ::Chimera::SDIO::Backend::reset;
+
+      return Chimera::Status::OK;
+    }
+  }    // namespace Backend
 }    // namespace Chimera::SDIO
+
+#endif  /* CHIMERA_SIMULATOR */

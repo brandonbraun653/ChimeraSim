@@ -42,6 +42,7 @@ namespace Chimera::Serial
 
   Chimera::Status_t Driver::open( const Chimera::Serial::Config &config )
   {
+    this->initAIO();
     return Chimera::Status::OK;
   }
 
