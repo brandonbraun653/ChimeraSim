@@ -49,6 +49,11 @@ namespace ChimeraSim::Timer
     return ms_time_since_epoch() - s_system_start;
   }
 
+  size_t micros()
+  {
+    return millis() * 1000;
+  }
+
   void delayMilliseconds( const size_t val )
   {
     /* OS dependent on whether or not this sleep is accurate */
@@ -72,6 +77,7 @@ namespace Chimera::Timer::Backend
     registry.delayMicroseconds = ::ChimeraSim::Timer::delayMicroseconds;
     registry.delayMilliseconds = ::ChimeraSim::Timer::delayMilliseconds;
     registry.millis            = ::ChimeraSim::Timer::millis;
+    registry.micros            = ::ChimeraSim::Timer::micros;
     return Chimera::Status::OK;
   }
 }

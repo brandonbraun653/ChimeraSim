@@ -38,6 +38,14 @@ namespace ChimeraSim::Timer
   size_t millis();
 
   /**
+   * @brief Returns the number of microseconds that have elapsed since the beginning
+   * of the program.
+   *
+   * @return size_t
+   */
+  size_t micros();
+
+  /**
    *  Delays (blocks) the current thread execution for a number of milliseconds
    *
    *  @note     May not be exact delays as this is OS dependent
