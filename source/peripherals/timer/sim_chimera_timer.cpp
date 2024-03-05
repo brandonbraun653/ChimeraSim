@@ -5,65 +5,121 @@
  *  Description:
  *    Simulator variant of the core chimera functionality.
  *
- *  2019-2021 | Brandon Braun | brandonbraun653@gmail.com
+ *  2019-2024 | Brandon Braun | brandonbraun653@gmail.com
  ********************************************************************************/
 
 #if defined( CHIMERA_SIMULATOR )
 
-/* STL Includes */
-#include <atomic>
-#include <cstdint>
-#include <chrono>
-#include <thread>
-
-/* Chimera Includes */
+/*-----------------------------------------------------------------------------
+Includes
+-----------------------------------------------------------------------------*/
 #include <Chimera/common>
-#include <Chimera/timer>
 #include <Chimera/system>
+#include <Chimera/timer>
+#include <atomic>
+#include <chrono>
+#include <cstdint>
+#include <thread>
+#include <memory>
 
 namespace ChimeraSim::Timer
 {
-  static size_t s_system_start;
+  /*---------------------------------------------------------------------------
+  Constants
+  ---------------------------------------------------------------------------*/
 
-  static size_t ms_time_since_epoch()
+  /**
+   * @brief Maps the number of microseconds per virtual system tick millisecond
+   *
+   */
+  static constexpr std::chrono::microseconds SYS_TICK_PERIOD_REALTIME{ 1'000 };
+
+  /*---------------------------------------------------------------------------
+  Static Data
+  ---------------------------------------------------------------------------*/
+  static size_t s_system_tick;
+  static std::unique_ptr<std::thread> s_tick_thread;
+
+  /*---------------------------------------------------------------------------
+  Static Functions
+  ---------------------------------------------------------------------------*/
+
+  /**
+   * @brief Simulate a timer interrupt thread.
+   *
+   * This is a simple thread that will run in the background and simulate
+   * a timer interrupt to generate a system tick reference.
+   *
+   */
+  static void timer_thread()
   {
-    using namespace std::chrono;
-
-    auto duration = system_clock::now().time_since_epoch();
-    return duration_cast<milliseconds>( duration ).count();
+    while ( true )
+    {
+      std::this_thread::sleep_for( SYS_TICK_PERIOD_REALTIME );
+      s_system_tick += 1;
+    }
   }
+
+  /*---------------------------------------------------------------------------
+  Public Functions
+  ---------------------------------------------------------------------------*/
 
   Chimera::Status_t initialize()
   {
-    s_system_start = ms_time_since_epoch();
+    s_system_tick = 0;
+    s_tick_thread = std::make_unique<std::thread>( timer_thread );
+
     return Chimera::Status::OK;
   }
+
 
   Chimera::Status_t reset()
   {
     return Chimera::Status::OK;
   }
 
+
   size_t millis()
   {
-    return ms_time_since_epoch() - s_system_start;
+    return s_system_tick;
   }
+
 
   size_t micros()
   {
+    // TODO: Get fancy with this later.
     return millis() * 1000;
   }
 
-  void delayMilliseconds( const size_t val )
-  {
-    /* OS dependent on whether or not this sleep is accurate */
-    std::this_thread::sleep_for( std::chrono::milliseconds( val ) );
-  }
 
   void delayMicroseconds( const size_t val )
   {
-    /* OS dependent on whether or not this sleep is accurate */
-    std::this_thread::sleep_for( std::chrono::microseconds( val ) );
+    /*-------------------------------------------------------------------------
+    Do most of the wait in a blocking state
+    -------------------------------------------------------------------------*/
+    const size_t currentTick = micros();
+    const size_t targetTick  = currentTick + val;
+    const auto bulkDelayTime = std::chrono::microseconds( ( targetTick - currentTick - 1 ) );
+
+    if( bulkDelayTime > SYS_TICK_PERIOD_REALTIME )
+    {
+      auto actual_sleep_time = bulkDelayTime - SYS_TICK_PERIOD_REALTIME;
+      std::this_thread::sleep_for( bulkDelayTime );
+    }
+
+    /*-------------------------------------------------------------------------
+    Do the rest of the wait in a busy loop, which should be very short
+    -------------------------------------------------------------------------*/
+    while ( micros() < targetTick )
+    {
+      continue;
+    }
+  }
+
+
+  void delayMilliseconds( const size_t val )
+  {
+    delayMicroseconds( val * 1000 );
   }
 }
 
