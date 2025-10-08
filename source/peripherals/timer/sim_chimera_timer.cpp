@@ -5,7 +5,7 @@
  *  Description:
  *    Simulator variant of the core chimera functionality.
  *
- *  2019-2024 | Brandon Braun | brandonbraun653@gmail.com
+ *  2019-2025 | Brandon Braun | brandonbraun653@gmail.com
  ********************************************************************************/
 
 #if defined( CHIMERA_SIMULATOR )
@@ -16,49 +16,15 @@ Includes
 #include <Chimera/common>
 #include <Chimera/system>
 #include <Chimera/timer>
-#include <atomic>
 #include <chrono>
-#include <cstdint>
 #include <thread>
-#include <memory>
 
 namespace ChimeraSim::Timer
 {
   /*---------------------------------------------------------------------------
-  Constants
-  ---------------------------------------------------------------------------*/
-
-  /**
-   * @brief Maps the number of microseconds per virtual system tick millisecond
-   *
-   */
-  static constexpr std::chrono::microseconds SYS_TICK_PERIOD_REALTIME{ 1'000 };
-
-  /*---------------------------------------------------------------------------
   Static Data
   ---------------------------------------------------------------------------*/
-  static size_t s_system_tick;
-  static std::unique_ptr<std::thread> s_tick_thread;
-
-  /*---------------------------------------------------------------------------
-  Static Functions
-  ---------------------------------------------------------------------------*/
-
-  /**
-   * @brief Simulate a timer interrupt thread.
-   *
-   * This is a simple thread that will run in the background and simulate
-   * a timer interrupt to generate a system tick reference.
-   *
-   */
-  static void timer_thread()
-  {
-    while ( true )
-    {
-      std::this_thread::sleep_for( SYS_TICK_PERIOD_REALTIME );
-      s_system_tick += 1;
-    }
-  }
+  static std::chrono::steady_clock::time_point s_start_time;
 
   /*---------------------------------------------------------------------------
   Public Functions
@@ -66,9 +32,7 @@ namespace ChimeraSim::Timer
 
   Chimera::Status_t initialize()
   {
-    s_system_tick = 0;
-    s_tick_thread = std::make_unique<std::thread>( timer_thread );
-
+    s_start_time = std::chrono::steady_clock::now();
     return Chimera::Status::OK;
   }
 
@@ -81,47 +45,31 @@ namespace ChimeraSim::Timer
 
   size_t millis()
   {
-    return s_system_tick;
+    auto now      = std::chrono::steady_clock::now();
+    auto duration = std::chrono::duration_cast<std::chrono::milliseconds>( now - s_start_time );
+    return static_cast<size_t>( duration.count() );
   }
 
 
   size_t micros()
   {
-    // TODO: Get fancy with this later.
-    return millis() * 1000;
+    auto now      = std::chrono::steady_clock::now();
+    auto duration = std::chrono::duration_cast<std::chrono::microseconds>( now - s_start_time );
+    return static_cast<size_t>( duration.count() );
   }
 
 
   void delayMicroseconds( const size_t val )
   {
-    /*-------------------------------------------------------------------------
-    Do most of the wait in a blocking state
-    -------------------------------------------------------------------------*/
-    const size_t currentTick = micros();
-    const size_t targetTick  = currentTick + val;
-    const auto bulkDelayTime = std::chrono::microseconds( ( targetTick - currentTick - 1 ) );
-
-    if( bulkDelayTime > SYS_TICK_PERIOD_REALTIME )
-    {
-      auto actual_sleep_time = bulkDelayTime - SYS_TICK_PERIOD_REALTIME;
-      std::this_thread::sleep_for( bulkDelayTime );
-    }
-
-    /*-------------------------------------------------------------------------
-    Do the rest of the wait in a busy loop, which should be very short
-    -------------------------------------------------------------------------*/
-    while ( micros() < targetTick )
-    {
-      continue;
-    }
+    std::this_thread::sleep_for( std::chrono::microseconds( val ) );
   }
 
 
   void delayMilliseconds( const size_t val )
   {
-    delayMicroseconds( val * 1000 );
+    std::this_thread::sleep_for( std::chrono::milliseconds( val ) );
   }
-}
+}    // namespace ChimeraSim::Timer
 
 namespace Chimera::Timer::Backend
 {
@@ -136,7 +84,7 @@ namespace Chimera::Timer::Backend
     registry.micros            = ::ChimeraSim::Timer::micros;
     return Chimera::Status::OK;
   }
-}
+}    // namespace Chimera::Timer::Backend
 
 #if defined( CHIMERA_STANDALONE )
 int main()
@@ -145,6 +93,5 @@ int main()
   return 0;
 }
 #endif
-
 
 #endif /* _WIN32 || _WIN64 */
