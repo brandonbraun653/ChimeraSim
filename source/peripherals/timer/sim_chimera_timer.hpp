@@ -5,7 +5,7 @@
  *  Description:
  *    Simulator variant of the core chimera functionality.
  *
- *  2019-2020 | Brandon Braun | brandonbraun653@gmail.com
+ *  2019-2025 | Brandon Braun | brandonbraun653@gmail.com
  ********************************************************************************/
 
 #pragma once
@@ -14,16 +14,27 @@
 
 #if defined( CHIMERA_SIMULATOR )
 
-/* STL Includes */
+/*-----------------------------------------------------------------------------
+Includes
+-----------------------------------------------------------------------------*/
 #include <cstdlib>
-
-/* Chimera Includes */
 #include <Chimera/common>
 
 namespace ChimeraSim::Timer
 {
+  /*---------------------------------------------------------------------------
+  Public Functions
+  ---------------------------------------------------------------------------*/
+  /**
+   * @brief Initializes the timer system for the simulator
+   * @return Chimera::Status_t
+   */
   Chimera::Status_t initialize();
 
+  /**
+   * @brief Resets the timer system to its initial state
+   * @return Chimera::Status_t
+   */
   Chimera::Status_t reset();
 
   /**
@@ -65,7 +76,29 @@ namespace ChimeraSim::Timer
    */
   void delayMicroseconds( const size_t val );
 
-}  // namespace ChimeraSim
+  /**
+   * @brief Enables an external time source and seeds it with the initial timestamp
+   * @param sim_time_us Latest timestamp provided by the external simulator (microseconds)
+   */
+  void enableExternalTimeSource( size_t sim_time_us );
 
-#endif /* _WIN32 || _WIN64 */
+  /**
+   * @brief Updates the external time source with a new timestamp (microseconds)
+   * @param sim_time_us Latest timestamp provided by the external simulator (microseconds)
+   */
+  void updateExternalTime( size_t sim_time_us );
+
+  /**
+   * @brief Disables the external time source and reverts to realtime execution
+   */
+  void disableExternalTimeSource();
+
+  /**
+   * @brief Indicates if the external time source is currently active
+   */
+  bool isExternalTimeSourceActive();
+
+}    // namespace ChimeraSim::Timer
+
+#endif /* CHIMERA_SIMULATOR */
 #endif /* SIM_CHIMERA_HPP */
