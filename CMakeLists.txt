@@ -60,3 +60,62 @@ gen_intf_lib(
   EXPORT_DIR
     ${PROJECT_BINARY_DIR}/Chimera
 )
+
+# ====================================================
+# Test Executable
+# ====================================================
+add_executable(chimera_sim_tests
+  test/test_main.cpp
+  test/timer/test_timer_basic.cpp
+  test/timer/test_timer_delays.cpp
+  test/timer/test_timer_external.cpp
+  source/peripherals/timer/sim_chimera_timer.cpp
+  ${COMMON_TOOL_ROOT}/cpputest/src/CppUTest/CommandLineArguments.cpp
+  ${COMMON_TOOL_ROOT}/cpputest/src/CppUTest/MemoryLeakWarningPlugin.cpp
+  ${COMMON_TOOL_ROOT}/cpputest/src/CppUTest/TestHarness_c.cpp
+  ${COMMON_TOOL_ROOT}/cpputest/src/CppUTest/TestRegistry.cpp
+  ${COMMON_TOOL_ROOT}/cpputest/src/CppUTest/CommandLineTestRunner.cpp
+  ${COMMON_TOOL_ROOT}/cpputest/src/CppUTest/SimpleString.cpp
+  ${COMMON_TOOL_ROOT}/cpputest/src/CppUTest/SimpleStringInternalCache.cpp
+  ${COMMON_TOOL_ROOT}/cpputest/src/CppUTest/TestMemoryAllocator.cpp
+  ${COMMON_TOOL_ROOT}/cpputest/src/CppUTest/TestResult.cpp
+  ${COMMON_TOOL_ROOT}/cpputest/src/CppUTest/JUnitTestOutput.cpp
+  ${COMMON_TOOL_ROOT}/cpputest/src/CppUTest/TeamCityTestOutput.cpp
+  ${COMMON_TOOL_ROOT}/cpputest/src/CppUTest/TestFailure.cpp
+  ${COMMON_TOOL_ROOT}/cpputest/src/CppUTest/TestOutput.cpp
+  ${COMMON_TOOL_ROOT}/cpputest/src/CppUTest/MemoryLeakDetector.cpp
+  ${COMMON_TOOL_ROOT}/cpputest/src/CppUTest/TestFilter.cpp
+  ${COMMON_TOOL_ROOT}/cpputest/src/CppUTest/TestPlugin.cpp
+  ${COMMON_TOOL_ROOT}/cpputest/src/CppUTest/TestTestingFixture.cpp
+  ${COMMON_TOOL_ROOT}/cpputest/src/CppUTest/SimpleMutex.cpp
+  ${COMMON_TOOL_ROOT}/cpputest/src/CppUTest/Utest.cpp
+  ${COMMON_TOOL_ROOT}/cpputest/platforms/gcc/UTestPlatform.cpp
+)
+
+target_link_libraries(chimera_sim_tests
+  PRIVATE
+    chimera_sim_intf_inc
+    aurora_intf_inc
+)
+
+target_compile_definitions(chimera_sim_tests
+  PRIVATE
+    CHIMERA_SIMULATOR
+    CPPUTEST_MEM_LEAK_DETECTION_DISABLED
+)
+
+target_include_directories(chimera_sim_tests
+  PRIVATE
+    ${CMAKE_CURRENT_SOURCE_DIR}/source
+    ${CMAKE_CURRENT_SOURCE_DIR}/source/peripherals/timer
+    ${COMMON_TOOL_ROOT}/cpputest/include
+)
+
+# ====================================================
+# Register Test with CTest
+# ====================================================
+add_test(
+  NAME chimera_sim_tests
+  COMMAND chimera_sim_tests
+  WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
+)

@@ -14,6 +14,13 @@
 Includes
 -----------------------------------------------------------------------------*/
 #include <Aurora/logging>
+
+/*-----------------------------------------------------------------------------
+Test stubs (only for unit tests)
+-----------------------------------------------------------------------------*/
+#ifdef CPPUTEST_MEM_LEAK_DETECTION_DISABLED
+#include "../../test/test_stubs.hpp"
+#endif
 #include <Chimera/common>
 #include <Chimera/system>
 #include <Chimera/timer>
@@ -80,22 +87,8 @@ namespace ChimeraSim::Timer
 
     size_t currentExternalMicros()
     {
-      const int64_t offset = s_external_time_offset_us.load( std::memory_order_acquire );
-      const size_t last    = s_last_external_time_us.load( std::memory_order_acquire );
-
-      int64_t combined = offset + static_cast<int64_t>( last );
-      if( combined < 0 )
-      {
-        combined = 0;
-      }
-
-      const int64_t max_size = static_cast<int64_t>( SIZE_MAX_VALUE );
-      if( combined > max_size )
-      {
-        combined = max_size;
-      }
-
-      return static_cast<size_t>( combined );
+      // With the new monotonic implementation, offset is always 0 and last contains the current external time
+      return s_last_external_time_us.load( std::memory_order_acquire );
     }
   }    // namespace
 
@@ -120,12 +113,6 @@ namespace ChimeraSim::Timer
   }
 
 
-  size_t millis()
-  {
-    return micros() / 1000U;
-  }
-
-
   size_t micros()
   {
     const auto now = std::chrono::steady_clock::now();
@@ -139,6 +126,12 @@ namespace ChimeraSim::Timer
       auto duration = std::chrono::duration_cast<std::chrono::microseconds>( now - s_start_time );
       return static_cast<size_t>( duration.count() );
     }
+  }
+
+
+  size_t millis()
+  {
+    return micros() / 1000U;
   }
 
 
@@ -186,12 +179,19 @@ namespace ChimeraSim::Timer
   {
     std::scoped_lock lock( s_time_mutex );
 
-    auto now          = std::chrono::steady_clock::now();
-    auto real_elapsed = std::chrono::duration_cast<std::chrono::microseconds>( now - s_start_time );
+    // Get current time value before switching to ensure monotonic continuity
+    const size_t current_time = micros();
 
-    const int64_t new_offset = static_cast<int64_t>( real_elapsed.count() ) - static_cast<int64_t>( sim_time_us );
+    // For monotonic time, we cannot go backwards. If sim_time_us is less than current_time,
+    // we use current_time as the new external time to maintain monotonicity.
+    const size_t effective_sim_time = ( sim_time_us >= current_time ) ? sim_time_us : current_time;
 
-    s_last_external_time_us.store( sim_time_us, std::memory_order_release );
+    // Calculate offset to maintain monotonic time: offset = 0
+    // We store the effective_sim_time as the base, so micros() returns effective_sim_time
+    // When external time is updated, we'll add to this base while maintaining monotonicity
+    const int64_t new_offset = 0;
+
+    s_last_external_time_us.store( effective_sim_time, std::memory_order_release );
     s_external_time_offset_us.store( new_offset, std::memory_order_release );
     s_use_external_time.store( true, std::memory_order_release );
     s_time_cv.notify_all();
