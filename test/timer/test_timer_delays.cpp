@@ -8,22 +8,23 @@
  *  2025 | Brandon Braun | brandonbraun653@gmail.com
  ********************************************************************************/
 
-#include <CppUTest/TestHarness.h>
+#include <gtest/gtest.h>
 #include "sim_chimera_timer.hpp"
 #include <chrono>
 #include <thread>
 
-TEST_GROUP( TimerDelays ){ void setup(){ ChimeraSim::Timer::reset();
-}
+class TimerDelaysTest : public ::testing::Test {
+protected:
+  void SetUp() override {
+    ChimeraSim::Timer::reset();
+  }
 
-void teardown()
-{
-  // Cleanup if needed
-}
-}
-;
+  void TearDown() override {
+    // Cleanup if needed
+  }
+};
 
-TEST( TimerDelays, DelayMicroseconds_Zero_Delay )
+TEST_F( TimerDelaysTest, DelayMicroseconds_Zero_Delay )
 {
   /*-------------------------------------------------------------------------
   Test that zero delay doesn't block
@@ -33,10 +34,10 @@ TEST( TimerDelays, DelayMicroseconds_Zero_Delay )
   const size_t end = ChimeraSim::Timer::micros();
 
   // Should complete very quickly
-  CHECK( ( end - start ) < 10U );    // Less than 10 microseconds
+  ASSERT_LT( ( end - start ), 10U );    // Less than 10 microseconds
 }
 
-TEST( TimerDelays, DelayMicroseconds_Small_Delay )
+TEST_F( TimerDelaysTest, DelayMicroseconds_Small_Delay )
 {
   /*-------------------------------------------------------------------------
   Test small delay (100 microseconds)
@@ -48,11 +49,11 @@ TEST( TimerDelays, DelayMicroseconds_Small_Delay )
   const size_t elapsed = end - start;
 
   // Should be at least the requested delay, but allow some variance
-  CHECK( elapsed >= 90U );     // At least 90 microseconds
-  CHECK( elapsed <= 200U );    // But not excessively longer
+  ASSERT_GE( elapsed, 90U );     // At least 90 microseconds
+  ASSERT_LE( elapsed, 200U );    // But not excessively longer
 }
 
-TEST( TimerDelays, DelayMilliseconds_Zero_Delay )
+TEST_F( TimerDelaysTest, DelayMilliseconds_Zero_Delay )
 {
   /*-------------------------------------------------------------------------
   Test that zero millisecond delay doesn't block
@@ -62,10 +63,10 @@ TEST( TimerDelays, DelayMilliseconds_Zero_Delay )
   const size_t end = ChimeraSim::Timer::millis();
 
   // Should complete very quickly
-  CHECK( ( end - start ) < 1U );    // Less than 1 millisecond
+  ASSERT_LT( ( end - start ), 1U );    // Less than 1 millisecond
 }
 
-TEST( TimerDelays, DelayMilliseconds_Small_Delay )
+TEST_F( TimerDelaysTest, DelayMilliseconds_Small_Delay )
 {
   /*-------------------------------------------------------------------------
   Test small millisecond delay (10 milliseconds)
@@ -77,6 +78,6 @@ TEST( TimerDelays, DelayMilliseconds_Small_Delay )
   const size_t elapsed = end - start;
 
   // Should be at least the requested delay, but allow some variance
-  CHECK( elapsed >= 9U );     // At least 9 milliseconds
-  CHECK( elapsed <= 20U );    // But not excessively longer
+  ASSERT_GE( elapsed, 9U );     // At least 9 milliseconds
+  ASSERT_LE( elapsed, 20U );    // But not excessively longer
 }

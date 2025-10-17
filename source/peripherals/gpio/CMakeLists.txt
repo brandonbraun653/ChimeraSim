@@ -11,8 +11,6 @@ gen_static_lib_variants(
     aurora_intf_inc
     chimera_intf_inc
     chimera_sim_intf_inc
-    gmock_inc
-    gtest_inc
   EXPORT_DIR
     "${PROJECT_BINARY_DIR}/Chimera"
 )
