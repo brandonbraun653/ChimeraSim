@@ -6,14 +6,14 @@ include(CTTesting)
 gen_gtest_executable(
   TARGET chimera_sim_timer_tests
   SOURCES
-    ../test_main.cpp
+    ${CHIMERA_SIM_ROOT}/test/test_main.cpp
     test_timer_basic.cpp
     test_timer_delays.cpp
     test_timer_external.cpp
-    ../../source/peripherals/timer/sim_chimera_timer.cpp
+    ${CHIMERA_SIM_ROOT}/source/peripherals/timer/sim_chimera_timer.cpp
   INCLUDES
-    ${CMAKE_CURRENT_SOURCE_DIR}/../../source
-    ${CMAKE_CURRENT_SOURCE_DIR}/../../source/peripherals/timer
+    ${CHIMERA_SIM_ROOT}/source
+    ${CHIMERA_SIM_ROOT}/source/peripherals/timer
   DEFINES
     CHIMERA_SIMULATOR
   LIBRARIES
