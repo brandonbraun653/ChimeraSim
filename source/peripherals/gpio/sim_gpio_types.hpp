@@ -18,9 +18,6 @@
 /* Chimera Includes */
 #include <Chimera/gpio>
 
-/* Simulator Includes */
-#include <ChimeraSim/source/shared/common_types.hpp>
-
 namespace Chimera::GPIO::SIM
 {
   /*---------------------------------------------------------------------------
@@ -28,12 +25,7 @@ namespace Chimera::GPIO::SIM
   ---------------------------------------------------------------------------*/
   class MockGPIO;
   class BasicGPIO;
-
-  /*---------------------------------------------------------------------------
-  Aliases
-  ---------------------------------------------------------------------------*/
-  using GPIODevice = Chimera::SIM::VirtualDevice<BasicGPIO, MockGPIO, void, Driver_rPtr>;
-
+  
   /*---------------------------------------------------------------------------
   Constants
   ---------------------------------------------------------------------------*/

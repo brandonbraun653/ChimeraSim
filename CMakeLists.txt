@@ -1,15 +1,11 @@
-include("${COMMON_TOOL_ROOT}/cmake/utility/embedded.cmake")
+include(embedded)
 
 set(CHIMERA_SIM_ROOT ${CMAKE_CURRENT_SOURCE_DIR})
 
 # ====================================================
 # Sub Projects
 # ====================================================
-# add_subdirectory(lib/json)  # TODO: Empty directory, needs CMakeLists.txt
-add_subdirectory(source/controller)
 add_subdirectory(source/peripherals)
-add_subdirectory(source/shared)
-add_subdirectory(source/transport)
 
 # ====================================================
 # Core Library

@@ -27,7 +27,7 @@ namespace Chimera::GPIO
   /*---------------------------------------------------------------------------
   Static Data
   ---------------------------------------------------------------------------*/
-  static std::array<SIM::GPIODevice, SIM::NUM_DRIVERS> s_devices;
+  static std::array<SIM::Driver, SIM::NUM_DRIVERS> s_devices;
 
   /*---------------------------------------------------------------------------
   Driver Implementation
