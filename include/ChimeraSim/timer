@@ -1,0 +1,17 @@
+/********************************************************************************
+*  File Name:
+*    timer
+*
+*  Description:
+*    ChimeraSim Timer Includes
+*
+*  2025 | Brandon Braun | brandonbraun653protonmail.com
+********************************************************************************/
+
+#pragma once
+#ifndef CHIMERA_SIM_TIMER_INCLUDES
+#define CHIMERA_SIM_TIMER_INCLUDES
+
+#include <ChimeraSim/source/peripherals/timer/sim_chimera_timer.hpp>
+
+#endif  /* !CHIMERA_SIM_TIMER_INCLUDES */

@@ -19,9 +19,11 @@ Includes
 #include <thread>
 #include <Chimera/common>
 #include <Chimera/system>
+#include <Chimera/thread>
 
 /* Global system tick counter */
-static std::atomic<size_t> sSysTick = 0;
+static std::atomic<size_t> sSysTick{ 0 };
+static std::atomic<bool>   sSysTickThreadRunning{ false };
 
 /**
  *	Thread that updates the Chimera millisecond timer counter
@@ -34,10 +36,25 @@ namespace Chimera::System
 {
   Chimera::Status_t prjSystemStartup()
   {
-    sSysTick       = 0;
-    //sSysTickThread = std::thread( SimSystemTick );
+    sSysTick.store( 0, std::memory_order_release );
 
-    return Chimera::Status::OK;
+    if( sSysTickThreadRunning.load( std::memory_order_acquire ) )
+    {
+      return Chimera::Status::OK;
+    }
+
+    try
+    {
+      sSysTickThreadRunning.store( true, std::memory_order_release );
+      sSysTickThread = std::thread( SimSystemTick );
+      return Chimera::Status::OK;
+    }
+    catch( const std::system_error &error )
+    {
+      (void)error;
+      sSysTickThreadRunning.store( false, std::memory_order_release );
+      return Chimera::Status::FAILED_INIT;
+    }
   }
 
   InterruptMask prjDisableInterrupts()
@@ -63,7 +80,7 @@ namespace Chimera::System
     FreeRTOS updates their system tick counter. Most of my systems
     at the moment are Embedded FreeRTOS based, so it makes some sense.
     ------------------------------------------------*/
-    return sSysTick;
+    return sSysTick.load( std::memory_order_acquire );
   }
 }  // namespace Chimera::System
 
@@ -110,7 +127,7 @@ static void SimSystemTick()
   Unfortunately that also means the system tick can't quit either, so debugging
   timing issues while using breakpoints are going to be a pain in the butt.
   ------------------------------------------------*/
-  while ( true )
+  while( sSysTickThreadRunning.load( std::memory_order_acquire ) )
   {
     currentTick = duration_cast<milliseconds>( system_clock::now().time_since_epoch() ).count();
     sSysTick = currentTick - tickStart;
@@ -118,6 +135,8 @@ static void SimSystemTick()
     // I can't really guarantee that this will sleep for this amount of time...
     std::this_thread::sleep_for( std::chrono::microseconds( 1000 ) );
   }
+
+  sSysTickThreadRunning.store( false, std::memory_order_release );
 }
 
 

@@ -39,8 +39,8 @@ namespace ChimeraSim::Timer
   ---------------------------------------------------------------------------*/
   static std::chrono::steady_clock::time_point s_start_time;
   static std::atomic<bool> s_use_external_time{ false };
-  static std::atomic<int64_t> s_external_time_offset_us{ 0 }; /**< Offset from realtime microseconds */
-  static std::atomic<size_t> s_last_external_time_us{ 0 };    /**< Last accepted external timestamp */
+  static std::atomic<int64_t> s_external_time_baseline_us{ 0 }; /**< Internal baseline time captured when external time enabled (microseconds) */
+  static std::atomic<size_t> s_last_external_offset_us{ 0 };     /**< Last accepted external time offset (microseconds) */
   static std::mutex s_time_mutex;
   static std::condition_variable s_time_cv;
 
@@ -87,8 +87,10 @@ namespace ChimeraSim::Timer
 
     size_t currentExternalMicros()
     {
-      // With the new monotonic implementation, offset is always 0 and last contains the current external time
-      return s_last_external_time_us.load( std::memory_order_acquire );
+      // Return baseline + last external offset to maintain monotonic time
+      const int64_t baseline = s_external_time_baseline_us.load( std::memory_order_seq_cst );
+      const size_t offset    = s_last_external_offset_us.load( std::memory_order_seq_cst );
+      return static_cast<size_t>( baseline + static_cast<int64_t>( offset ) );
     }
   }    // namespace
 
@@ -100,8 +102,8 @@ namespace ChimeraSim::Timer
   {
     s_start_time = std::chrono::steady_clock::now();
     s_use_external_time.store( false, std::memory_order_release );
-    s_external_time_offset_us.store( 0, std::memory_order_release );
-    s_last_external_time_us.store( 0, std::memory_order_release );
+    s_external_time_baseline_us.store( 0, std::memory_order_release );
+    s_last_external_offset_us.store( 0, std::memory_order_release );
     s_time_cv.notify_all();
     return Chimera::Status::OK;
   }
@@ -117,7 +119,7 @@ namespace ChimeraSim::Timer
   {
     const auto now = std::chrono::steady_clock::now();
 
-    if( s_use_external_time.load( std::memory_order_acquire ) )
+    if( s_use_external_time.load( std::memory_order_seq_cst ) )
     {
       return currentExternalMicros();
     }
@@ -179,21 +181,13 @@ namespace ChimeraSim::Timer
   {
     std::scoped_lock lock( s_time_mutex );
 
-    // Get current time value before switching to ensure monotonic continuity
-    const size_t current_time = micros();
+    // Get current internal time before switching - this becomes our baseline
+    const size_t current_internal_time = micros();
 
-    // For monotonic time, we cannot go backwards. If sim_time_us is less than current_time,
-    // we use current_time as the new external time to maintain monotonicity.
-    const size_t effective_sim_time = ( sim_time_us >= current_time ) ? sim_time_us : current_time;
-
-    // Calculate offset to maintain monotonic time: offset = 0
-    // We store the effective_sim_time as the base, so micros() returns effective_sim_time
-    // When external time is updated, we'll add to this base while maintaining monotonicity
-    const int64_t new_offset = 0;
-
-    s_last_external_time_us.store( effective_sim_time, std::memory_order_release );
-    s_external_time_offset_us.store( new_offset, std::memory_order_release );
-    s_use_external_time.store( true, std::memory_order_release );
+    // Store the baseline (internal time at enable) and initial external offset
+    s_external_time_baseline_us.store( static_cast<int64_t>( current_internal_time ), std::memory_order_seq_cst );
+    s_last_external_offset_us.store( sim_time_us, std::memory_order_seq_cst );
+    s_use_external_time.store( true, std::memory_order_seq_cst );
     s_time_cv.notify_all();
   }
 
@@ -207,20 +201,20 @@ namespace ChimeraSim::Timer
       return;
     }
 
-    const size_t last_time = s_last_external_time_us.load( std::memory_order_relaxed );
-    if( sim_time_us < last_time )
+    const size_t last_offset = s_last_external_offset_us.load( std::memory_order_relaxed );
+    if( sim_time_us < last_offset )
     {
-      LOG_WARN( "Timer: Ignoring out-of-order Matlab sim time update (%zu < %zu)", sim_time_us, last_time );
+      LOG_WARN( "Timer: Ignoring out-of-order external time offset update (%zu < %zu)", sim_time_us, last_offset );
       return;
     }
 
-    if( sim_time_us == last_time )
+    if( sim_time_us == last_offset )
     {
-      LOG_DEBUG( "Timer: Ignoring duplicate Matlab sim time update (%zu)", sim_time_us );
+      LOG_DEBUG( "Timer: Ignoring duplicate external time offset update (%zu)", sim_time_us );
       return;
     }
 
-    s_last_external_time_us.store( sim_time_us, std::memory_order_release );
+    s_last_external_offset_us.store( sim_time_us, std::memory_order_release );
     s_time_cv.notify_all();
   }
 
@@ -231,10 +225,10 @@ namespace ChimeraSim::Timer
 
     auto now = std::chrono::steady_clock::now();
 
-    const size_t final_external = s_last_external_time_us.load( std::memory_order_acquire );
-    const int64_t offset        = s_external_time_offset_us.load( std::memory_order_acquire );
+    const int64_t baseline     = s_external_time_baseline_us.load( std::memory_order_acquire );
+    const size_t last_offset   = s_last_external_offset_us.load( std::memory_order_acquire );
 
-    int64_t combined_time = offset + static_cast<int64_t>( final_external );
+    int64_t combined_time = baseline + static_cast<int64_t>( last_offset );
     if( combined_time < 0 )
     {
       combined_time = 0;
@@ -243,8 +237,8 @@ namespace ChimeraSim::Timer
     const auto adjusted_start = now - std::chrono::microseconds( combined_time );
     s_start_time              = adjusted_start;
     s_use_external_time.store( false, std::memory_order_release );
-    s_external_time_offset_us.store( 0, std::memory_order_release );
-    s_last_external_time_us.store( 0, std::memory_order_release );
+    s_external_time_baseline_us.store( 0, std::memory_order_release );
+    s_last_external_offset_us.store( 0, std::memory_order_release );
     s_time_cv.notify_all();
   }
 

@@ -9,9 +9,7 @@
  ********************************************************************************/
 
 #include <gtest/gtest.h>
-#include "sim_chimera_timer.hpp"
-#include <chrono>
-#include <thread>
+#include <ChimeraSim/timer> 
 
 class TimerDelaysTest : public ::testing::Test {
 protected:

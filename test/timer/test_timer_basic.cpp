@@ -9,7 +9,7 @@
  ********************************************************************************/
 
 #include <gtest/gtest.h>
-#include "sim_chimera_timer.hpp"
+#include <ChimeraSim/timer>
 #include <chrono>
 #include <thread>
 

@@ -1,6 +1,3 @@
-# ====================================================
-# Timer Test Executable
-# ====================================================
 include(CTTesting)
 
 gen_gtest_executable(
@@ -12,14 +9,14 @@ gen_gtest_executable(
     test_timer_external.cpp
     ${CHIMERA_SIM_ROOT}/source/peripherals/timer/sim_chimera_timer.cpp
   INCLUDES
-    ${CHIMERA_SIM_ROOT}/source
-    ${CHIMERA_SIM_ROOT}/source/peripherals/timer
-  DEFINES
-    CHIMERA_SIMULATOR
+    ${CHIMERA_SIM_ROOT}/include
   LIBRARIES
-    chimera_sim_intf_inc
     aurora_intf_inc
     aurora_logging
     chimera_core
+    chimera_sim_crc
+    chimera_sim_intf_inc
+    chimera_sim_power
+    chimera_sim_serial
     prj_device_target
 )

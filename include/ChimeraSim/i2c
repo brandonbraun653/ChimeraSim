@@ -14,5 +14,6 @@
 
 #include <ChimeraSim/source/peripherals/i2c/sim_i2c_types.hpp>
 #include <ChimeraSim/source/peripherals/i2c/sim_i2c_virtual.hpp>
+#include <ChimeraSim/source/peripherals/i2c/sim_i2c_intf.hpp>
 
 #endif  /* !CHIMERA_SIM_I2C_INCLUDES */

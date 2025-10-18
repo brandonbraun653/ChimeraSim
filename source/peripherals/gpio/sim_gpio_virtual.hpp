@@ -23,6 +23,7 @@
 #include <gmock/gmock.h>
 
 /* Simulator Includes */
+#include <ChimeraSim/source/shared/common_types.hpp>
 #include <ChimeraSim/source/peripherals/gpio/sim_gpio_types.hpp>
 
 

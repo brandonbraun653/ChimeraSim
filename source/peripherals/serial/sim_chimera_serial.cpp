@@ -59,14 +59,16 @@ namespace Chimera::Serial
 
     std::cout << raw_data << std::flush;
     signalAIO( Chimera::Event::Trigger::TRIGGER_WRITE_COMPLETE );
-    return length;
+    return static_cast<int>( length );
   }
 
 
   int Driver::read( void *const buffer, const size_t length, const size_t timeout )
   {
     signalAIO( Chimera::Event::Trigger::TRIGGER_READ_COMPLETE );
-    return length;
+    (void)buffer;
+    (void)timeout;
+    return static_cast<int>( length );
   }
 
 
@@ -111,6 +113,6 @@ namespace Chimera::Serial
   {
   }
 
-}    // namespace Chimera::UART
+}    // namespace Chimera::Serial
 
 #endif /* CHIMERA_SIMULATOR */
