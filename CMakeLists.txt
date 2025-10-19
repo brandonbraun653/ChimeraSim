@@ -1,4 +1,4 @@
-include(embedded)
+include(CTEmbedded)
 
 set(CHIMERA_SIM_ROOT ${CMAKE_CURRENT_SOURCE_DIR})
 
