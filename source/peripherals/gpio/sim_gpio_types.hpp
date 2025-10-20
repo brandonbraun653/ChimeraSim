@@ -5,27 +5,66 @@
  *  Description:
  *    Specifies configuration characteristics of the sim driver
  *
- *  2021 | Brandon Braun | brandonbraun653@gmail.com
+ *  2021-2025 | Brandon Braun | brandonbraun653@gmail.com
  *******************************************************************************/
 
 #pragma once
 #ifndef CHIMERA_SIM_GPIO_DETAIL_HPP
 #define CHIMERA_SIM_GPIO_DETAIL_HPP
 
-/* STL Includes */
+/*-----------------------------------------------------------------------------
+Includes
+-----------------------------------------------------------------------------*/
 #include <cstddef>
-
-/* Chimera Includes */
 #include <Chimera/gpio>
 
-namespace Chimera::GPIO::SIM
+namespace Chimera::GPIO::Sim
 {
   /*---------------------------------------------------------------------------
-  Forward Declarations
+  Structures
   ---------------------------------------------------------------------------*/
-  class MockGPIO;
-  class BasicGPIO;
-  
+  /**
+   *  Tracks the simulated state of the virtual GPIO device
+   */
+  struct VirtualState
+  {
+    std::recursive_timed_mutex mtx; /**< Driver lock */
+    float threshold;                /**< Threshold at which logic transitions occur */
+    float voltage;                  /**< Current voltage applied to the pin */
+    State logicState;               /**< Current logical state */
+    PinInit config;                 /**< Pin configuration settings */
+  };
+
+  /*---------------------------------------------------------------------------
+  Classes
+  ---------------------------------------------------------------------------*/
+  /**
+   *  Basic GPIO implementation that mimics a working driver with no fancy add-ons
+   */
+  class BasicGPIO : public Chimera::GPIO::IGPIO
+  {
+  public:
+    virtual Chimera::Status_t init( const Chimera::GPIO::PinInit &pinInit ) override;
+    virtual Chimera::Status_t init( const Chimera::GPIO::Port port, const uint8_t pin ) override;
+    virtual Chimera::Status_t setMode( const Chimera::GPIO::Drive drive, const Chimera::GPIO::Pull pull ) override;
+    virtual Chimera::Status_t setState( const Chimera::GPIO::State state ) override;
+    virtual Chimera::Status_t getState( Chimera::GPIO::State &state ) override;
+    virtual Chimera::Status_t toggle() override;
+    virtual Chimera::Status_t attachInterrupt( Chimera::Function::vGeneric &func,
+                                               const Chimera::EXTI::EdgeTrigger trigger ) override;
+    virtual void detachInterrupt() override;
+    virtual Chimera::EXTI::EventLine_t getInterruptLine() override;
+    virtual void lock() override;
+    virtual void lockFromISR() override;
+    virtual bool try_lock_for( const size_t timeout ) override;
+    virtual void unlock() override;
+    virtual void unlockFromISR() override;
+
+  protected:
+    VirtualState mHWState;
+  };
+
+
   /*---------------------------------------------------------------------------
   Constants
   ---------------------------------------------------------------------------*/
@@ -85,21 +124,6 @@ namespace Chimera::GPIO::SIM
   static constexpr size_t GPIOO_PIN_RINDEX_OFFSET = GPION_PIN_RINDEX_OFFSET + GPION_NUM_PINS;
   static constexpr size_t GPIOP_PIN_RINDEX_OFFSET = GPIOO_PIN_RINDEX_OFFSET + GPIOO_NUM_PINS;
 
-  /*---------------------------------------------------------------------------
-  Structures
-  ---------------------------------------------------------------------------*/
-  /**
-   *  Tracks the simulated state of the virtual GPIO device
-   */
-  struct VirtualState
-  {
-    std::recursive_timed_mutex mtx; /**< Driver lock */
-    float threshold;                /**< Threshold at which logic transitions occur */
-    float voltage;                  /**< Current voltage applied to the pin */
-    State logicState;               /**< Current logical state */
-    PinInit config;                 /**< Pin configuration settings */
-  };
-
-}    // namespace Chimera::GPIO::SIM
+}    // namespace Chimera::GPIO::Sim
 
 #endif /* !CHIMERA_SIM_GPIO_DETAIL_HPP */

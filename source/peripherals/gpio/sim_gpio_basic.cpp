@@ -14,9 +14,8 @@
 
 /* Simulator Includes */
 #include <ChimeraSim/gpio>
-#include <ChimeraSim/source/peripherals/gpio/sim_gpio_virtual.hpp>
 
-namespace Chimera::GPIO::SIM
+namespace Chimera::GPIO::Sim
 {
   /*---------------------------------------------------------------------------
   Basic GPIO Implementation
@@ -45,8 +44,8 @@ namespace Chimera::GPIO::SIM
     /*-------------------------------------------------
     Device must be an output if a state is to be set
     -------------------------------------------------*/
-    if ( ( mHWState.config.drive < Drive::NUM_OPTIONS ) && ( mHWState.config.drive != Drive::HIZ ) &&
-         ( mHWState.config.drive != Drive::INPUT ) )
+    if( ( mHWState.config.drive < Drive::NUM_OPTIONS ) && ( mHWState.config.drive != Drive::HIZ ) &&
+        ( mHWState.config.drive != Drive::INPUT ) )
     {
       mHWState.logicState = state;
       mHWState.voltage    = ( state == State::HIGH ) ? 3.3f : 0.0f;
@@ -109,4 +108,4 @@ namespace Chimera::GPIO::SIM
     mHWState.mtx.unlock();
   }
 
-}    // namespace Chimera::GPIO::SIM
+}    // namespace Chimera::GPIO::Sim

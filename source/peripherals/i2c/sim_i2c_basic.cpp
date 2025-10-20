@@ -15,7 +15,7 @@ Includes
 #include <Chimera/i2c>
 #include <ChimeraSim/i2c>
 
-namespace Chimera::I2C::SIM
+namespace Chimera::I2C::Sim
 {
   Chimera::Status_t BasicI2C::open( const DriverConfig &cfg )
   {
@@ -85,4 +85,4 @@ namespace Chimera::I2C::SIM
   {
   }
 
-}    // namespace Chimera::I2C::SIM
+}    // namespace Chimera::I2C::Sim

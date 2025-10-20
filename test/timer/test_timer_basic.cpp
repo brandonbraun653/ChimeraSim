@@ -13,13 +13,16 @@
 #include <chrono>
 #include <thread>
 
-class TimerBasicTest : public ::testing::Test {
+class TimerBasicTest : public ::testing::Test
+{
 protected:
-  void SetUp() override {
-    ChimeraSim::Timer::reset();
+  void SetUp() override
+  {
+    Chimera::Timer::Sim::reset();
   }
 
-  void TearDown() override {
+  void TearDown() override
+  {
     // Cleanup if needed
   }
 };
@@ -29,7 +32,7 @@ TEST_F( TimerBasicTest, Initialization )
   /*-------------------------------------------------------------------------
   Test that initialization succeeds
   -------------------------------------------------------------------------*/
-  ASSERT_EQ( Chimera::Status::OK, ChimeraSim::Timer::initialize() );
+  ASSERT_EQ( Chimera::Status::OK, Chimera::Timer::Sim::initialize() );
 }
 
 TEST_F( TimerBasicTest, Reset )
@@ -37,7 +40,7 @@ TEST_F( TimerBasicTest, Reset )
   /*-------------------------------------------------------------------------
   Test that reset succeeds
   -------------------------------------------------------------------------*/
-  ASSERT_EQ( Chimera::Status::OK, ChimeraSim::Timer::reset() );
+  ASSERT_EQ( Chimera::Status::OK, Chimera::Timer::Sim::reset() );
 }
 
 TEST_F( TimerBasicTest, Microseconds_Increases_Over_Time )
@@ -45,11 +48,11 @@ TEST_F( TimerBasicTest, Microseconds_Increases_Over_Time )
   /*-------------------------------------------------------------------------
   Test that micros() increases over time when using real time
   -------------------------------------------------------------------------*/
-  ChimeraSim::Timer::initialize();
+  Chimera::Timer::Sim::initialize();
 
-  const size_t start = ChimeraSim::Timer::micros();
+  const size_t start = Chimera::Timer::Sim::micros();
   std::this_thread::sleep_for( std::chrono::milliseconds( 1 ) );
-  const size_t end = ChimeraSim::Timer::micros();
+  const size_t end = Chimera::Timer::Sim::micros();
 
   ASSERT_TRUE( end > start );
 }
@@ -59,11 +62,11 @@ TEST_F( TimerBasicTest, Milliseconds_Increases_Over_Time )
   /*-------------------------------------------------------------------------
   Test that millis() increases over time when using real time
   -------------------------------------------------------------------------*/
-  ChimeraSim::Timer::initialize();
+  Chimera::Timer::Sim::initialize();
 
-  const size_t start = ChimeraSim::Timer::millis();
+  const size_t start = Chimera::Timer::Sim::millis();
   std::this_thread::sleep_for( std::chrono::milliseconds( 10 ) );
-  const size_t end = ChimeraSim::Timer::millis();
+  const size_t end = Chimera::Timer::Sim::millis();
 
   ASSERT_TRUE( end > start );
 }
@@ -73,10 +76,10 @@ TEST_F( TimerBasicTest, Millis_Micros_Relationship )
   /*-------------------------------------------------------------------------
   Test that millis() is approximately micros() / 1000
   -------------------------------------------------------------------------*/
-  ChimeraSim::Timer::initialize();
+  Chimera::Timer::Sim::initialize();
 
-  const size_t micros_val = ChimeraSim::Timer::micros();
-  const size_t millis_val = ChimeraSim::Timer::millis();
+  const size_t micros_val = Chimera::Timer::Sim::micros();
+  const size_t millis_val = Chimera::Timer::Sim::millis();
 
   // Allow for some timing variance, but should be within 1ms difference
   const size_t micros_to_millis = micros_val / 1000U;

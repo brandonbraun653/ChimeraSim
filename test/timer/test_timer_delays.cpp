@@ -9,15 +9,18 @@
  ********************************************************************************/
 
 #include <gtest/gtest.h>
-#include <ChimeraSim/timer> 
+#include <ChimeraSim/timer>
 
-class TimerDelaysTest : public ::testing::Test {
+class TimerDelaysTest : public ::testing::Test
+{
 protected:
-  void SetUp() override {
-    ChimeraSim::Timer::reset();
+  void SetUp() override
+  {
+    Chimera::Timer::Sim::reset();
   }
 
-  void TearDown() override {
+  void TearDown() override
+  {
     // Cleanup if needed
   }
 };
@@ -27,9 +30,9 @@ TEST_F( TimerDelaysTest, DelayMicroseconds_Zero_Delay )
   /*-------------------------------------------------------------------------
   Test that zero delay doesn't block
   -------------------------------------------------------------------------*/
-  const size_t start = ChimeraSim::Timer::micros();
-  ChimeraSim::Timer::delayMicroseconds( 0 );
-  const size_t end = ChimeraSim::Timer::micros();
+  const size_t start = Chimera::Timer::Sim::micros();
+  Chimera::Timer::Sim::delayMicroseconds( 0 );
+  const size_t end = Chimera::Timer::Sim::micros();
 
   // Should complete very quickly
   ASSERT_LT( ( end - start ), 10U );    // Less than 10 microseconds
@@ -40,9 +43,9 @@ TEST_F( TimerDelaysTest, DelayMicroseconds_Small_Delay )
   /*-------------------------------------------------------------------------
   Test small delay (100 microseconds)
   -------------------------------------------------------------------------*/
-  const size_t start = ChimeraSim::Timer::micros();
-  ChimeraSim::Timer::delayMicroseconds( 100 );
-  const size_t end = ChimeraSim::Timer::micros();
+  const size_t start = Chimera::Timer::Sim::micros();
+  Chimera::Timer::Sim::delayMicroseconds( 100 );
+  const size_t end = Chimera::Timer::Sim::micros();
 
   const size_t elapsed = end - start;
 
@@ -56,9 +59,9 @@ TEST_F( TimerDelaysTest, DelayMilliseconds_Zero_Delay )
   /*-------------------------------------------------------------------------
   Test that zero millisecond delay doesn't block
   -------------------------------------------------------------------------*/
-  const size_t start = ChimeraSim::Timer::millis();
-  ChimeraSim::Timer::delayMilliseconds( 0 );
-  const size_t end = ChimeraSim::Timer::millis();
+  const size_t start = Chimera::Timer::Sim::millis();
+  Chimera::Timer::Sim::delayMilliseconds( 0 );
+  const size_t end = Chimera::Timer::Sim::millis();
 
   // Should complete very quickly
   ASSERT_LT( ( end - start ), 1U );    // Less than 1 millisecond
@@ -69,9 +72,9 @@ TEST_F( TimerDelaysTest, DelayMilliseconds_Small_Delay )
   /*-------------------------------------------------------------------------
   Test small millisecond delay (10 milliseconds)
   -------------------------------------------------------------------------*/
-  const size_t start = ChimeraSim::Timer::millis();
-  ChimeraSim::Timer::delayMilliseconds( 10 );
-  const size_t end = ChimeraSim::Timer::millis();
+  const size_t start = Chimera::Timer::Sim::millis();
+  Chimera::Timer::Sim::delayMilliseconds( 10 );
+  const size_t end = Chimera::Timer::Sim::millis();
 
   const size_t elapsed = end - start;
 

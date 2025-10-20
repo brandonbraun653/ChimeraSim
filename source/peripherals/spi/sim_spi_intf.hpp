@@ -18,7 +18,7 @@
 /* Chimera Includes */
 #include <Chimera/spi>
 
-namespace Chimera::SPI::SIM
+namespace Chimera::SPI::Sim
 {
   /*---------------------------------------------------------------------------
   Public Functions
@@ -47,6 +47,6 @@ namespace Chimera::SPI::SIM
    */
   size_t getResourceIndex( const Chimera::SPI::Channel channel );
 
-}  // namespace Chimera::SPI::SIM
+}    // namespace Chimera::SPI::Sim
 
-#endif  /* !CHIMERA_SIM_SPI_INTERFACE_HPP */
+#endif /* !CHIMERA_SIM_SPI_INTERFACE_HPP */

@@ -12,40 +12,20 @@
 #ifndef CHIMERA_SIM_SPI_DETAIL_HPP
 #define CHIMERA_SIM_SPI_DETAIL_HPP
 
-/* STL Includes */
+/*-----------------------------------------------------------------------------
+Includes
+-----------------------------------------------------------------------------*/
 #include <cstddef>
 #include <mutex>
-
-/* Chimera Includes */
 #include <Chimera/spi>
 
-/* Simulator Includes */
-#include <ChimeraSim/source/shared/common_types.hpp>
-
-namespace Chimera::SPI::SIM
+namespace Chimera::SPI::Sim
 {
-  /*---------------------------------------------------------------------------
-  Forward Declarations
-  ---------------------------------------------------------------------------*/
-  class MockSPI;
-  class BasicSPI;
-  class NetworkedSPI;
-
-  /*---------------------------------------------------------------------------
-  Aliases
-  ---------------------------------------------------------------------------*/
-  using SPIDevice = Chimera::SIM::VirtualDevice<BasicSPI, MockSPI, NetworkedSPI, Driver_rPtr>;
-
-  /*---------------------------------------------------------------------------
-  Constants
-  ---------------------------------------------------------------------------*/
-  static constexpr size_t NUM_DRIVERS = static_cast<size_t>( Chimera::SPI::Channel::NUM_OPTIONS );
-
   /*---------------------------------------------------------------------------
   Structures
   ---------------------------------------------------------------------------*/
   /**
-   *  Tracks the simulated state of the virtual device
+   *  Tracks the simulated state of the virtual SPI device
    */
   struct VirtualState
   {
@@ -55,6 +35,44 @@ namespace Chimera::SPI::SIM
     Chimera::Hardware::PeripheralMode periphMode;
   };
 
-}  // namespace Chimera::SPI::SIM
+  /*---------------------------------------------------------------------------
+  Classes
+  ---------------------------------------------------------------------------*/
+  /**
+   *  Basic SPI implementation that mimics a working driver with no fancy add-ons
+   */
+  class BasicSPI : public Chimera::Thread::AsyncIO<BasicSPI>,
+                   public Chimera::Thread::Lockable<BasicSPI>,
+                   public virtual Chimera::SPI::ISPI
+  {
+  public:
+    using Chimera::Thread::AsyncIO<BasicSPI>::AsyncIO;
 
-#endif  /* !CHIMERA_SIM_SPI_DETAIL_HPP */
+    virtual Chimera::Status_t init( const Chimera::SPI::DriverConfig &setupStruct ) override;
+    virtual Chimera::Status_t deInit() override;
+    virtual Chimera::Status_t assignChipSelect( const Chimera::GPIO::Driver_rPtr cs ) override;
+    virtual Chimera::Status_t setChipSelect( const Chimera::GPIO::State value ) override;
+    virtual Chimera::Status_t setChipSelectControlMode( const Chimera::SPI::CSMode mode ) override;
+    virtual Chimera::Status_t writeBytes( const void *const txBuffer, const size_t length ) override;
+    virtual Chimera::Status_t readBytes( void *const rxBuffer, const size_t length ) override;
+    virtual Chimera::Status_t readWriteBytes( const void *const txBuffer, void *const rxBuffer, const size_t length ) override;
+    virtual Chimera::Status_t setPeripheralMode( const Chimera::Hardware::PeripheralMode mode ) override;
+    virtual Chimera::Status_t setClockFrequency( const size_t freq, const size_t tolerance ) override;
+    virtual Chimera::SPI::HardwareInit getInit() override;
+    virtual size_t getClockFrequency() override;
+
+  protected:
+    friend Chimera::Thread::Lockable<BasicSPI>;
+    friend Chimera::Thread::AsyncIO<BasicSPI>;
+
+    VirtualState mHWState;
+  };
+
+  /*---------------------------------------------------------------------------
+  Constants
+  ---------------------------------------------------------------------------*/
+  static constexpr size_t NUM_DRIVERS = static_cast<size_t>( Chimera::SPI::Channel::NUM_OPTIONS );
+
+}    // namespace Chimera::SPI::Sim
+
+#endif /* !CHIMERA_SIM_SPI_DETAIL_HPP */

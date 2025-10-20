@@ -5,14 +5,11 @@ gen_static_lib_variants(
     chimera_sim_gpio
   SOURCES
     sim_gpio_basic.cpp
-    sim_gpio_controlled.cpp
     sim_gpio_driver.cpp
   PRV_LIBRARIES
     aurora_intf_inc
     chimera_intf_inc
     chimera_sim_intf_inc
-    $<BOOL:${GMOCK}>:gmock
-    $<BOOL:${GTEST}>:gtest
   EXPORT_DIR
     "${PROJECT_BINARY_DIR}/Chimera"
 )

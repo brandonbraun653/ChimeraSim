@@ -1,6 +1,6 @@
 include(CTEmbedded)
 
-set(CHIMERA_SIM_ROOT ${CMAKE_CURRENT_SOURCE_DIR})
+set(CHIMERA_SIM_ROOT ${CMAKE_CURRENT_SOURCE_DIR} CACHE STRING "The root directory of the ChimeraSim project" FORCE)
 
 # ====================================================
 # Sub Projects
@@ -16,7 +16,6 @@ gen_intf_lib_variants(
   LIBRARIES
     chimera_sim_adc
     chimera_sim_can
-    chimera_sim_controller
     chimera_sim_clock
     chimera_sim_exti
     chimera_sim_gpio
@@ -25,11 +24,9 @@ gen_intf_lib_variants(
     chimera_sim_pwm
     chimera_sim_sdio
     chimera_sim_serial
-    chimera_sim_shared
     chimera_sim_spi
     chimera_sim_system
     chimera_sim_timer
-    chimera_sim_transport
     chimera_sim_uart
     chimera_sim_usart
     chimera_sim_watchdog
@@ -44,15 +41,14 @@ gen_intf_lib(
   TARGET
     chimera_sim_intf_inc
   INTF_INCLUDES
-    "./../"
-    "./include"
-    "./lib/json/include"
-    "./lib/zeromq"
+    "${CHIMERA_SIM_ROOT}/../"
+    "${CHIMERA_SIM_ROOT}/include"
+    "${CHIMERA_SIM_ROOT}/lib/json/include"
+    "${CHIMERA_SIM_ROOT}/lib/zeromq"
   INTF_LIBRARIES
     etl_inc
     aurora_intf_inc
     chimera_intf_inc
-
   EXPORT_DIR
     ${PROJECT_BINARY_DIR}/Chimera
 )

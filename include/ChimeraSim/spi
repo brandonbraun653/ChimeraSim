@@ -1,12 +1,12 @@
 /********************************************************************************
-*  File Name:
-*    spi
-*
-*  Description:
-*    ChimeraSim SPI Includes
-*
-*  2021 | Brandon Braun | brandonbraun653@gmail.com
-********************************************************************************/
+ *  File Name:
+ *    spi
+ *
+ *  Description:
+ *    ChimeraSim SPI Includes
+ *
+ *  2021 | Brandon Braun | brandonbraun653@gmail.com
+ ********************************************************************************/
 
 #pragma once
 #ifndef CHIMERA_SIM_SPI_INCLUDES
@@ -14,6 +14,5 @@
 
 #include <ChimeraSim/source/peripherals/spi/sim_spi_intf.hpp>
 #include <ChimeraSim/source/peripherals/spi/sim_spi_types.hpp>
-#include <ChimeraSim/source/peripherals/spi/sim_spi_virtual.hpp>
 
-#endif  /* !CHIMERA_SIM_SPI_INCLUDES */
+#endif /* !CHIMERA_SIM_SPI_INCLUDES */

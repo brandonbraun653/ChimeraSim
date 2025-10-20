@@ -6,13 +6,10 @@ gen_static_lib_variants(
   SOURCES
     sim_spi_basic.cpp
     sim_spi_driver.cpp
-    sim_spi_networked.cpp
   PRV_LIBRARIES
     aurora_intf_inc
     chimera_intf_inc
     chimera_sim_intf_inc
-    $<BOOL:${GMOCK}>:gmock
-    $<BOOL:${GTEST}>:gtest
   EXPORT_DIR
     "${PROJECT_BINARY_DIR}/Chimera"
 )

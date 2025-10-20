@@ -32,15 +32,17 @@ Test stubs (only for unit tests)
 #include <mutex>
 #include <thread>
 
-namespace ChimeraSim::Timer
+namespace Chimera::Timer::Sim
 {
   /*---------------------------------------------------------------------------
   Static Data
   ---------------------------------------------------------------------------*/
   static std::chrono::steady_clock::time_point s_start_time;
   static std::atomic<bool> s_use_external_time{ false };
-  static std::atomic<int64_t> s_external_time_baseline_us{ 0 }; /**< Internal baseline time captured when external time enabled (microseconds) */
-  static std::atomic<size_t> s_last_external_offset_us{ 0 };     /**< Last accepted external time offset (microseconds) */
+  static std::atomic<int64_t> s_external_time_baseline_us{
+    0
+  }; /**< Internal baseline time captured when external time enabled (microseconds) */
+  static std::atomic<size_t> s_last_external_offset_us{ 0 }; /**< Last accepted external time offset (microseconds) */
   static std::mutex s_time_mutex;
   static std::condition_variable s_time_cv;
 
@@ -225,8 +227,8 @@ namespace ChimeraSim::Timer
 
     auto now = std::chrono::steady_clock::now();
 
-    const int64_t baseline     = s_external_time_baseline_us.load( std::memory_order_acquire );
-    const size_t last_offset   = s_last_external_offset_us.load( std::memory_order_acquire );
+    const int64_t baseline   = s_external_time_baseline_us.load( std::memory_order_acquire );
+    const size_t last_offset = s_last_external_offset_us.load( std::memory_order_acquire );
 
     int64_t combined_time = baseline + static_cast<int64_t>( last_offset );
     if( combined_time < 0 )
@@ -247,19 +249,19 @@ namespace ChimeraSim::Timer
   {
     return s_use_external_time.load( std::memory_order_acquire );
   }
-}    // namespace ChimeraSim::Timer
+}    // namespace Chimera::Timer::Sim
 
 namespace Chimera::Timer::Backend
 {
   Chimera::Status_t registerDriver( Chimera::Timer::Backend::DriverConfig &registry )
   {
     registry.isSupported       = true;
-    registry.initialize        = ::ChimeraSim::Timer::initialize;
-    registry.reset             = ::ChimeraSim::Timer::reset;
-    registry.delayMicroseconds = ::ChimeraSim::Timer::delayMicroseconds;
-    registry.delayMilliseconds = ::ChimeraSim::Timer::delayMilliseconds;
-    registry.millis            = ::ChimeraSim::Timer::millis;
-    registry.micros            = ::ChimeraSim::Timer::micros;
+    registry.initialize        = ::Chimera::Timer::Sim::initialize;
+    registry.reset             = ::Chimera::Timer::Sim::reset;
+    registry.delayMicroseconds = ::Chimera::Timer::Sim::delayMicroseconds;
+    registry.delayMilliseconds = ::Chimera::Timer::Sim::delayMilliseconds;
+    registry.millis            = ::Chimera::Timer::Sim::millis;
+    registry.micros            = ::Chimera::Timer::Sim::micros;
     return Chimera::Status::OK;
   }
 }    // namespace Chimera::Timer::Backend

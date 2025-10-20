@@ -18,7 +18,7 @@
 /* Chimera Includes */
 #include <Chimera/gpio>
 
-namespace Chimera::GPIO::SIM
+namespace Chimera::GPIO::Sim
 {
   /*---------------------------------------------------------------------------
   Public Functions
@@ -55,6 +55,6 @@ namespace Chimera::GPIO::SIM
    */
   size_t getPinResourceIndex( const Chimera::GPIO::Port port, const Chimera::GPIO::Pin pin );
 
-}  // namespace Chimera::GPIO::SIM
+}    // namespace Chimera::GPIO::Sim
 
-#endif  /* !CHIMERA_SIM_GPIO_INTERFACE_HPP */
+#endif /* !CHIMERA_SIM_GPIO_INTERFACE_HPP */

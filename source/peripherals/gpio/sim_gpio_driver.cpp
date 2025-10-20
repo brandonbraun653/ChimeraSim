@@ -10,24 +10,21 @@
 
 #if defined( CHIMERA_SIMULATOR )
 
-/* STL Includes */
-#include <mutex>
-
-/* Chimera Includes */
+/*-----------------------------------------------------------------------------
+Includes
+-----------------------------------------------------------------------------*/
 #include <Chimera/assert>
 #include <Chimera/common>
 #include <Chimera/gpio>
-
-/* Simulator Includes */
 #include <ChimeraSim/gpio>
-#include <ChimeraSim/source/shared/common_types.hpp>
+#include <Thor/lld/common/types.hpp>
 
 namespace Chimera::GPIO
 {
   /*---------------------------------------------------------------------------
   Static Data
   ---------------------------------------------------------------------------*/
-  static std::array<SIM::Driver, SIM::NUM_DRIVERS> s_devices;
+  static std::array<Sim::BasicGPIO, Sim::NUM_DRIVERS> s_devices;
 
   /*---------------------------------------------------------------------------
   Driver Implementation
@@ -50,8 +47,8 @@ namespace Chimera::GPIO
     /*-------------------------------------------------
     Input protection
     -------------------------------------------------*/
-    size_t idx = SIM::getPinResourceIndex( pinInit.port, pinInit.pin );
-    if( idx == Chimera::SIM::INVALID_RESOURCE_INDEX )
+    size_t idx = Sim::getPinResourceIndex( pinInit.port, pinInit.pin );
+    if( idx == Thor::LLD::INVALID_RESOURCE_INDEX )
     {
       return Chimera::Status::NOT_SUPPORTED;
     }
@@ -62,16 +59,9 @@ namespace Chimera::GPIO
     mImpl = reinterpret_cast<void *>( &s_devices[ idx ] );
 
     /*-------------------------------------------------
-    Update the driver's notion of it's resource index
+    Invoke the basic GPIO implementation directly
     -------------------------------------------------*/
-    std::lock_guard<std::recursive_mutex> lk( s_devices[ idx ].lock );
-    s_devices[ idx ].resourceIndex = idx;
-
-    /*-------------------------------------------------
-    Validate and invoke the fake/mock
-    -------------------------------------------------*/
-    RT_HARD_ASSERT( SIM::validateDriver( &s_devices[ idx ] ) );
-    return s_devices[ idx ].virtualDriver->init( pinInit );
+    return s_devices[ idx ].init( pinInit );
   }
 
 
@@ -80,8 +70,8 @@ namespace Chimera::GPIO
     /*-------------------------------------------------
     Input protection
     -------------------------------------------------*/
-    size_t idx = SIM::getPinResourceIndex( port, pin );
-    if( idx == Chimera::SIM::INVALID_RESOURCE_INDEX )
+    size_t idx = Sim::getPinResourceIndex( port, pin );
+    if( idx == Thor::LLD::INVALID_RESOURCE_INDEX )
     {
       return Chimera::Status::NOT_SUPPORTED;
     }
@@ -92,86 +82,58 @@ namespace Chimera::GPIO
     mImpl = reinterpret_cast<void *>( &s_devices[ idx ] );
 
     /*-------------------------------------------------
-    Update the driver's notion of it's resource index
+    Invoke the basic GPIO implementation directly
     -------------------------------------------------*/
-    std::lock_guard<std::recursive_mutex> lk( s_devices[ idx ].lock );
-    s_devices[ idx ].resourceIndex = idx;
-
-    /*-------------------------------------------------
-    Validate and invoke the fake/mock
-    -------------------------------------------------*/
-    RT_HARD_ASSERT( SIM::validateDriver( &s_devices[ idx ] ) );
-    return s_devices[ idx ].virtualDriver->init( port, pin );
+    return s_devices[ idx ].init( port, pin );
   }
 
 
   Chimera::Status_t Driver::setMode( const Chimera::GPIO::Drive drive, const Chimera::GPIO::Pull pull )
   {
-    RT_HARD_ASSERT( SIM::validateDriver( mImpl ) );
-    auto driver = reinterpret_cast<SIM::GPIODevice *>( mImpl );
-
-    std::lock_guard<std::recursive_mutex> lk( driver->lock );
-    return driver->virtualDriver->setMode( drive, pull );
+    auto driver = reinterpret_cast<Sim::BasicGPIO *>( mImpl );
+    return driver->setMode( drive, pull );
   }
 
 
   Chimera::Status_t Driver::setState( const Chimera::GPIO::State state )
   {
-    RT_HARD_ASSERT( SIM::validateDriver( mImpl ) );
-    auto driver = reinterpret_cast<SIM::GPIODevice *>( mImpl );
-
-    std::lock_guard<std::recursive_mutex> lk( driver->lock );
-    return driver->virtualDriver->setState( state );
+    auto driver = reinterpret_cast<Sim::BasicGPIO *>( mImpl );
+    return driver->setState( state );
   }
 
 
   Chimera::Status_t Driver::getState( Chimera::GPIO::State &state )
   {
-    RT_HARD_ASSERT( SIM::validateDriver( mImpl ) );
-    auto driver = reinterpret_cast<SIM::GPIODevice *>( mImpl );
-
-    std::lock_guard<std::recursive_mutex> lk( driver->lock );
-    return driver->virtualDriver->getState( state );
+    auto driver = reinterpret_cast<Sim::BasicGPIO *>( mImpl );
+    return driver->getState( state );
   }
 
 
   Chimera::Status_t Driver::toggle()
   {
-    RT_HARD_ASSERT( SIM::validateDriver( mImpl ) );
-    auto driver = reinterpret_cast<SIM::GPIODevice *>( mImpl );
-
-    std::lock_guard<std::recursive_mutex> lk( driver->lock );
-    return driver->virtualDriver->toggle();
+    auto driver = reinterpret_cast<Sim::BasicGPIO *>( mImpl );
+    return driver->toggle();
   }
 
 
   Chimera::Status_t Driver::attachInterrupt( Chimera::Function::vGeneric &func, const Chimera::EXTI::EdgeTrigger trigger )
   {
-    RT_HARD_ASSERT( SIM::validateDriver( mImpl ) );
-    auto driver = reinterpret_cast<SIM::GPIODevice *>( mImpl );
-
-    std::lock_guard<std::recursive_mutex> lk( driver->lock );
-    return driver->virtualDriver->attachInterrupt( func, trigger );
+    auto driver = reinterpret_cast<Sim::BasicGPIO *>( mImpl );
+    return driver->attachInterrupt( func, trigger );
   }
 
 
   void Driver::detachInterrupt()
   {
-    RT_HARD_ASSERT( SIM::validateDriver( mImpl ) );
-    auto driver = reinterpret_cast<SIM::GPIODevice *>( mImpl );
-
-    std::lock_guard<std::recursive_mutex> lk( driver->lock );
-    driver->virtualDriver->detachInterrupt();
+    auto driver = reinterpret_cast<Sim::BasicGPIO *>( mImpl );
+    driver->detachInterrupt();
   }
 
 
   Chimera::EXTI::EventLine_t Driver::getInterruptLine()
   {
-    RT_HARD_ASSERT( SIM::validateDriver( mImpl ) );
-    auto driver = reinterpret_cast<SIM::GPIODevice *>( mImpl );
-
-    std::lock_guard<std::recursive_mutex> lk( driver->lock );
-    return driver->virtualDriver->getInterruptLine();
+    auto driver = reinterpret_cast<Sim::BasicGPIO *>( mImpl );
+    return driver->getInterruptLine();
   }
 
 
@@ -182,33 +144,12 @@ namespace Chimera::GPIO
   {
     Chimera::Status_t initialize()
     {
-      /*-------------------------------------------------
-      Create the runtime driver instances
-      -------------------------------------------------*/
-      for( auto &dev : s_devices )
-      {
-        if( dev.initialized )
-        {
-          continue;
-        }
-
-        std::lock_guard<std::recursive_mutex> lk( dev.lock );
-        dev.realDriver    = new Chimera::GPIO::Driver();
-        dev.virtualDriver = new ::testing::NiceMock<Chimera::GPIO::SIM::MockGPIO>();
-        dev.defaultDriver = new Chimera::GPIO::SIM::BasicGPIO();
-        dev.initialized   = true;
-
-        dev.virtualDriver->DelegateToFake( dev.defaultDriver );
-      }
-
       return Chimera::Status::OK;
     }
 
 
     Chimera::Status_t reset()
     {
-      // Replace all drivers with default mocks but do not invalidate pointers
-
       return Chimera::Status::NOT_SUPPORTED;
     }
 
@@ -218,17 +159,16 @@ namespace Chimera::GPIO
       /*-------------------------------------------------
       Input Protection
       -------------------------------------------------*/
-      size_t idx = SIM::getPinResourceIndex( port, pin );
-      if( idx == Chimera::SIM::INVALID_RESOURCE_INDEX )
+      size_t idx = Sim::getPinResourceIndex( port, pin );
+      if( idx == Thor::LLD::INVALID_RESOURCE_INDEX )
       {
         return nullptr;
       }
 
       /*-------------------------------------------------
-      Get the latest assigned driver instance
+      Return a new driver instance for each request
       -------------------------------------------------*/
-      std::lock_guard<std::recursive_mutex> lk( s_devices[ idx ].lock );
-      return s_devices[ idx ].realDriver;
+      return new Chimera::GPIO::Driver();
     }
 
 
@@ -245,7 +185,7 @@ namespace Chimera::GPIO
   /*---------------------------------------------------------------------------
   Simulator Implementation Details
   ---------------------------------------------------------------------------*/
-  namespace SIM
+  namespace Sim
   {
     static const std::array<uint8_t, NUM_PERIPHS> portIndex = {
       GPIOA_RESOURCE_INDEX, GPIOB_RESOURCE_INDEX, GPIOC_RESOURCE_INDEX, GPIOD_RESOURCE_INDEX,
@@ -262,126 +202,6 @@ namespace Chimera::GPIO
     };
 
 
-    void MockGPIO::DelegateToFake( IGPIO *const fake )
-    {
-      using ::testing::_;
-      using ::testing::Matcher;
-
-      RT_HARD_ASSERT( fake );
-      mFake = fake;
-
-      ON_CALL( *this, init( _ ) ).WillByDefault( [ this ]( const Chimera::GPIO::PinInit &a ) {
-        RT_HARD_ASSERT( mFake );
-        return mFake->init( a );
-      } );
-
-      ON_CALL( *this, init( _, _ ) ).WillByDefault( [ this ]( const Chimera::GPIO::Port a, const uint8_t b ) {
-        RT_HARD_ASSERT( mFake );
-        return mFake->init( a, b );
-      } );
-
-      ON_CALL( *this, setMode ).WillByDefault( [ this ]( const Chimera::GPIO::Drive a, const Chimera::GPIO::Pull b ) {
-        RT_HARD_ASSERT( mFake );
-        return mFake->setMode( a, b );
-      } );
-
-      ON_CALL( *this, attachInterrupt )
-          .WillByDefault( [ this ]( Chimera::Function::vGeneric &a, const Chimera::EXTI::EdgeTrigger b ) {
-            RT_HARD_ASSERT( mFake );
-            return mFake->attachInterrupt( a, b );
-          } );
-
-      ON_CALL( *this, setState ).WillByDefault( [ this ]( const Chimera::GPIO::State a ) {
-        RT_HARD_ASSERT( mFake );
-        return mFake->setState( a );
-      } );
-
-      ON_CALL( *this, getState ).WillByDefault( [ this ]( Chimera::GPIO::State &a ) {
-        RT_HARD_ASSERT( mFake );
-        return mFake->getState( a );
-      } );
-
-      ON_CALL( *this, toggle ).WillByDefault( [ this ]() {
-        RT_HARD_ASSERT( mFake );
-        return mFake->toggle();
-      } );
-
-      ON_CALL( *this, detachInterrupt ).WillByDefault( [ this ]() {
-        RT_HARD_ASSERT( mFake );
-        mFake->detachInterrupt();
-      } );
-
-      ON_CALL( *this, getInterruptLine ).WillByDefault( [ this ]() {
-        RT_HARD_ASSERT( mFake );
-        return mFake->getInterruptLine();
-      } );
-
-      ON_CALL( *this, lock ).WillByDefault( [ this ]() {
-        RT_HARD_ASSERT( mFake );
-        mFake->lock();
-      } );
-
-      ON_CALL( *this, lockFromISR ).WillByDefault( [ this ]() {
-        RT_HARD_ASSERT( mFake );
-        mFake->lockFromISR();
-      } );
-
-      ON_CALL( *this, try_lock_for ).WillByDefault( [ this ]( const size_t a ) {
-        RT_HARD_ASSERT( mFake );
-        return mFake->try_lock_for( a );
-      } );
-
-      ON_CALL( *this, unlock ).WillByDefault( [ this ]() {
-        RT_HARD_ASSERT( mFake );
-        mFake->unlock();
-      } );
-
-      ON_CALL( *this, unlockFromISR ).WillByDefault( [ this ]() {
-        RT_HARD_ASSERT( mFake );
-        mFake->unlockFromISR();
-      } );
-    }
-
-
-    bool validateDriver( void *const driver )
-    {
-      /*-------------------------------------------------
-      First, make sure the driver is actually an instance
-      of the stored GPIO device drivers.
-      -------------------------------------------------*/
-      bool isStoredDriver         = false;
-      size_t idx                  = 0;
-      std::uintptr_t inputAddress = reinterpret_cast<std::uintptr_t>( driver );
-
-      for ( size_t x = 0; x < s_devices.size(); x++ )
-      {
-        if ( inputAddress == reinterpret_cast<std::uintptr_t>( &s_devices[ x ] ) )
-        {
-          idx            = x;
-          isStoredDriver = true;
-          break;
-        }
-      }
-
-      if( !isStoredDriver )
-      {
-        return false;
-      }
-
-      /*-------------------------------------------------
-      Next validate that the driver has been initialized
-      and can have methods invoked on mock/fake classes.
-      -------------------------------------------------*/
-      std::lock_guard<std::recursive_mutex> lk( s_devices[ idx ].lock );
-
-      /* clang-format off */
-      return ( s_devices[ idx ].realDriver &&
-               s_devices[ idx ].virtualDriver &&
-               ( s_devices[ idx ].resourceIndex < SIM::NUM_DRIVERS ) );
-      /* clang-format on */
-    }
-
-
     bool isSupported( const Chimera::GPIO::Port port, const Chimera::GPIO::Pin pin )
     {
       return ( static_cast<size_t>( port ) < NUM_PERIPHS ) && ( static_cast<size_t>( pin ) < NUM_PINS_PER_PERIPH );
@@ -390,12 +210,12 @@ namespace Chimera::GPIO
 
     size_t getPinResourceIndex( const Chimera::GPIO::Port port, const Chimera::GPIO::Pin pin )
     {
-      auto retVal = Chimera::SIM::INVALID_RESOURCE_INDEX;
+      auto retVal = Thor::LLD::INVALID_RESOURCE_INDEX;
 
       /*-------------------------------------------------
       Boundary check against the project's description
       -------------------------------------------------*/
-      if ( !isSupported( port, pin ) )
+      if( !isSupported( port, pin ) )
       {
         return retVal;
       }
@@ -404,11 +224,11 @@ namespace Chimera::GPIO
       Compute the index, assuming every pin exists
       -------------------------------------------------*/
       const size_t offset = pinOffset[ static_cast<uint8_t>( port ) ];
-      retVal = offset + pin;
+      retVal              = offset + pin;
 
       return retVal;
     }
-  }    // namespace SIM
+  }    // namespace Sim
 }    // namespace Chimera::GPIO
 
 

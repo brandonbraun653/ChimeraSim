@@ -20,7 +20,7 @@ Includes
 #include <cstdlib>
 #include <Chimera/common>
 
-namespace ChimeraSim::Timer
+namespace Chimera::Timer::Sim
 {
   /*---------------------------------------------------------------------------
   Public Functions
@@ -119,7 +119,7 @@ namespace ChimeraSim::Timer
    */
   bool isExternalTimeSourceActive();
 
-}    // namespace ChimeraSim::Timer
+}    // namespace Chimera::Timer::Sim
 
 #endif /* CHIMERA_SIMULATOR */
 #endif /* SIM_CHIMERA_HPP */

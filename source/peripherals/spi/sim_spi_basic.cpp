@@ -14,9 +14,8 @@
 
 /* Simulator Includes */
 #include <ChimeraSim/spi>
-#include <ChimeraSim/source/peripherals/spi/sim_spi_virtual.hpp>
 
-namespace Chimera::SPI::SIM
+namespace Chimera::SPI::Sim
 {
   /*---------------------------------------------------------------------------
   Basic SPI Implementation
@@ -98,4 +97,4 @@ namespace Chimera::SPI::SIM
     return mHWState.clockFrequency;
   }
 
-}    // namespace Chimera::SPI::SIM
+}    // namespace Chimera::SPI::Sim
