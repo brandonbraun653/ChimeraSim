@@ -5,7 +5,7 @@
  *  Description:
  *    GPIO Simulator
  *
- *  2021 | Brandon Braun | brandonbraun653@gmail.com
+ *  2021-2025 | Brandon Braun | brandonbraun653@gmail.com
  *******************************************************************************/
 
 #if defined( CHIMERA_SIMULATOR )
@@ -24,7 +24,7 @@ namespace Chimera::GPIO
   /*---------------------------------------------------------------------------
   Static Data
   ---------------------------------------------------------------------------*/
-  static std::array<Sim::BasicGPIO, Sim::NUM_DRIVERS> s_devices;
+  static std::array<Driver, Sim::NUM_DRIVERS> s_devices;
 
   /*---------------------------------------------------------------------------
   Driver Implementation
@@ -44,96 +44,54 @@ namespace Chimera::GPIO
   -------------------------------------------------*/
   Chimera::Status_t Driver::init( const Chimera::GPIO::PinInit &pinInit )
   {
-    /*-------------------------------------------------
-    Input protection
-    -------------------------------------------------*/
-    size_t idx = Sim::getPinResourceIndex( pinInit.port, pinInit.pin );
-    if( idx == Thor::LLD::INVALID_RESOURCE_INDEX )
-    {
-      return Chimera::Status::NOT_SUPPORTED;
-    }
-
-    /*-------------------------------------------------
-    Store reference to this device driver
-    -------------------------------------------------*/
-    mImpl = reinterpret_cast<void *>( &s_devices[ idx ] );
-
-    /*-------------------------------------------------
-    Invoke the basic GPIO implementation directly
-    -------------------------------------------------*/
-    return s_devices[ idx ].init( pinInit );
+    return Chimera::Status::OK;
   }
 
 
   Chimera::Status_t Driver::init( const Chimera::GPIO::Port port, const uint8_t pin )
   {
-    /*-------------------------------------------------
-    Input protection
-    -------------------------------------------------*/
-    size_t idx = Sim::getPinResourceIndex( port, pin );
-    if( idx == Thor::LLD::INVALID_RESOURCE_INDEX )
-    {
-      return Chimera::Status::NOT_SUPPORTED;
-    }
-
-    /*-------------------------------------------------
-    Store reference to this device driver
-    -------------------------------------------------*/
-    mImpl = reinterpret_cast<void *>( &s_devices[ idx ] );
-
-    /*-------------------------------------------------
-    Invoke the basic GPIO implementation directly
-    -------------------------------------------------*/
-    return s_devices[ idx ].init( port, pin );
+    return Chimera::Status::OK;
   }
 
 
   Chimera::Status_t Driver::setMode( const Chimera::GPIO::Drive drive, const Chimera::GPIO::Pull pull )
   {
-    auto driver = reinterpret_cast<Sim::BasicGPIO *>( mImpl );
-    return driver->setMode( drive, pull );
+    return Chimera::Status::OK;
   }
 
 
   Chimera::Status_t Driver::setState( const Chimera::GPIO::State state )
   {
-    auto driver = reinterpret_cast<Sim::BasicGPIO *>( mImpl );
-    return driver->setState( state );
+    return Chimera::Status::OK;
   }
 
 
   Chimera::Status_t Driver::getState( Chimera::GPIO::State &state )
   {
-    auto driver = reinterpret_cast<Sim::BasicGPIO *>( mImpl );
-    return driver->getState( state );
+    return Chimera::Status::OK;
   }
 
 
   Chimera::Status_t Driver::toggle()
   {
-    auto driver = reinterpret_cast<Sim::BasicGPIO *>( mImpl );
-    return driver->toggle();
+    return Chimera::Status::OK;
   }
 
 
   Chimera::Status_t Driver::attachInterrupt( Chimera::Function::vGeneric &func, const Chimera::EXTI::EdgeTrigger trigger )
   {
-    auto driver = reinterpret_cast<Sim::BasicGPIO *>( mImpl );
-    return driver->attachInterrupt( func, trigger );
+    return Chimera::Status::OK;
   }
 
 
   void Driver::detachInterrupt()
   {
-    auto driver = reinterpret_cast<Sim::BasicGPIO *>( mImpl );
-    driver->detachInterrupt();
   }
 
 
   Chimera::EXTI::EventLine_t Driver::getInterruptLine()
   {
-    auto driver = reinterpret_cast<Sim::BasicGPIO *>( mImpl );
-    return driver->getInterruptLine();
+    return 0;
   }
 
 
@@ -156,19 +114,14 @@ namespace Chimera::GPIO
 
     Chimera::GPIO::Driver_rPtr getDriver( const Port port, const Pin pin )
     {
-      /*-------------------------------------------------
-      Input Protection
-      -------------------------------------------------*/
       size_t idx = Sim::getPinResourceIndex( port, pin );
       if( idx == Thor::LLD::INVALID_RESOURCE_INDEX )
       {
         return nullptr;
       }
 
-      /*-------------------------------------------------
-      Return a new driver instance for each request
-      -------------------------------------------------*/
-      return new Chimera::GPIO::Driver();
+      RT_HARD_ASSERT( idx < s_devices.size() );
+      return &s_devices[ idx ];
     }
 
 
@@ -178,6 +131,7 @@ namespace Chimera::GPIO
       registry.getDriver   = getDriver;
       registry.initialize  = initialize;
       registry.reset       = reset;
+
       return Chimera::Status::OK;
     }
   }    // namespace Backend

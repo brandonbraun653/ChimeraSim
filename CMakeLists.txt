@@ -17,6 +17,7 @@ gen_intf_lib_variants(
     chimera_sim_adc
     chimera_sim_can
     chimera_sim_clock
+    chimera_sim_dma
     chimera_sim_exti
     chimera_sim_gpio
     chimera_sim_i2c

@@ -206,13 +206,12 @@ namespace Chimera::Timer::Sim
     const size_t last_offset = s_last_external_offset_us.load( std::memory_order_relaxed );
     if( sim_time_us < last_offset )
     {
-      LOG_WARN( "Timer: Ignoring out-of-order external time offset update (%zu < %zu)", sim_time_us, last_offset );
+      LOG_WARN( "Ignoring out-of-order external time offset update (%zu < %zu)", sim_time_us, last_offset );
       return;
     }
 
     if( sim_time_us == last_offset )
     {
-      LOG_DEBUG( "Timer: Ignoring duplicate external time offset update (%zu)", sim_time_us );
       return;
     }
 

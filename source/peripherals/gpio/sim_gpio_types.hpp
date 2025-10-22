@@ -36,36 +36,6 @@ namespace Chimera::GPIO::Sim
   };
 
   /*---------------------------------------------------------------------------
-  Classes
-  ---------------------------------------------------------------------------*/
-  /**
-   *  Basic GPIO implementation that mimics a working driver with no fancy add-ons
-   */
-  class BasicGPIO : public Chimera::GPIO::IGPIO
-  {
-  public:
-    virtual Chimera::Status_t init( const Chimera::GPIO::PinInit &pinInit ) override;
-    virtual Chimera::Status_t init( const Chimera::GPIO::Port port, const uint8_t pin ) override;
-    virtual Chimera::Status_t setMode( const Chimera::GPIO::Drive drive, const Chimera::GPIO::Pull pull ) override;
-    virtual Chimera::Status_t setState( const Chimera::GPIO::State state ) override;
-    virtual Chimera::Status_t getState( Chimera::GPIO::State &state ) override;
-    virtual Chimera::Status_t toggle() override;
-    virtual Chimera::Status_t attachInterrupt( Chimera::Function::vGeneric &func,
-                                               const Chimera::EXTI::EdgeTrigger trigger ) override;
-    virtual void detachInterrupt() override;
-    virtual Chimera::EXTI::EventLine_t getInterruptLine() override;
-    virtual void lock() override;
-    virtual void lockFromISR() override;
-    virtual bool try_lock_for( const size_t timeout ) override;
-    virtual void unlock() override;
-    virtual void unlockFromISR() override;
-
-  protected:
-    VirtualState mHWState;
-  };
-
-
-  /*---------------------------------------------------------------------------
   Constants
   ---------------------------------------------------------------------------*/
   static constexpr size_t NUM_PERIPHS         = 16;
