@@ -194,29 +194,30 @@ namespace Chimera::Timer::Sim
   }
 
 
-  void updateExternalTime( size_t sim_time_us )
+  bool updateExternalTime( size_t sim_time_us )
   {
     std::scoped_lock lock( s_time_mutex );
 
     if( !s_use_external_time.load( std::memory_order_acquire ) )
     {
-      return;
+      return false;
     }
 
     const size_t last_offset = s_last_external_offset_us.load( std::memory_order_relaxed );
     if( sim_time_us < last_offset )
     {
       LOG_WARN( "Ignoring out-of-order external time offset update (%zu < %zu)", sim_time_us, last_offset );
-      return;
+      return false;
     }
 
     if( sim_time_us == last_offset )
     {
-      return;
+      return false;
     }
 
     s_last_external_offset_us.store( sim_time_us, std::memory_order_release );
     s_time_cv.notify_all();
+    return true;
   }
 
 

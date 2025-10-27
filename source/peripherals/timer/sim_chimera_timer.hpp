@@ -103,8 +103,9 @@ namespace Chimera::Timer::Sim
    * the current offset, the update is ignored. External time advances as: baseline + new_offset.
    *
    * @param sim_time_us New time offset from the baseline (microseconds, must be >= current offset)
+   * @return true if the update was successful, false otherwise
    */
-  void updateExternalTime( size_t sim_time_us );
+  bool updateExternalTime( size_t sim_time_us );
 
   /**
    * @brief Disables the external time source and reverts to realtime execution
